@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!-- Alias 설정 -->
+    <typeAliases>
+        <typeAlias alias="board" type="com.eightbit.biz.board.vo.BoardVO" />
+        <typeAlias alias="user"  type="com.eightbit.biz.user.vo.UserVO" />
+        <typeAlias alias="temp" type="com.eightbit.biz.user.vo.TempVO"/>
+        <typeAlias alias="phone" type="com.eightbit.biz.user.vo.PhoneVO"/>
+        <typeAlias alias="point" type="com.eightbit.biz.user.vo.PointVO"/>
+        <typeAlias alias="reply" type="com.eightbit.biz.board.vo.ReplyVO"/>
+        <typeAlias alias="reComment" type="com.eightbit.biz.board.vo.ReCommentVO"/>
+        <typeAlias alias="articleView" type="com.eightbit.biz.board.vo.ArticleViewVO"/>
+        <typeAlias alias="uploadFile" type="com.eightbit.biz.board.vo.UploadFile"/>
+    </typeAliases>
+
+
+    <!-- Sql Mapper 설정 -->
+</configuration>

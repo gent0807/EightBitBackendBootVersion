@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMyBatisDAO">
+
+    <select id="getUserList" resultType="user">
+        select * from user
+    </select>
+
+    <select id="getTempList" resultType="temp">
+        select * from auth_temp
+    </select>
+
+    <select id="getPhoneList" resultType="phone">
+        select * from phoneTBL
+    </select>
+
+    <select id="getAuthNum" resultType="string">
+        select auth_key from auth_temp where email=#{email}
+    </select>
+
+    <select id="getPhoneAuthNum" resultType="string">
+        select authNum from phoneTBL where phoneNum=#{phoneNum}
+    </select>
+
+    <select id="getUserPassword" resultType="string">
+        select password from user where email=#{email}
+    </select>
+
+    <select id="getPassword" resultType="string">
+        select password from user where nickname=#{nickname}
+    </select>
+
+    <select id="getRole" resultType="string">
+        select role from user where nickname=#{nickname}
+    </select>
+
+    <select id="getPoint" resultType="point">
+        select nickname, point from user where nickname=#{nickname}
+    </select>
+
+    <select id="getUserProfileImagePath" resultType="user">
+        select profileImgPath from user where nickname=#{nickname}
+    </select>
+
+    <select id="getAccessToken" resultType="string">
+        select accesstoken from user where nickname=#{writer}
+    </select>
+
+    <select id="getRefreshToken" resultType="string">
+        select refreshtoken from user where nickname=#{writer}
+    </select>
+
+    <insert id="insertUser">
+        insert into user(email, password, nickname, role, profileImgPath) values(#{email}, #{password}, #{nickname}, #{role}, #{profileImgPath})
+    </insert>
+
+    <insert id="insertTempUser">
+        insert into auth_temp(email, auth_key) values(#{email}, #{authNum})
+    </insert>
+
+    <insert id="insertPhone">
+        insert into phoneTBL(phoneNum, authNum) values (#{phoneNum}, #{authNum})
+    </insert>
+
+
+    <update id="updateUserPw">
+        update user set password=#{password} where email=#{email}
+    </update>
+
+    <update id="updateToken">
+        update user set accesstoken=#{accessToken}, refreshtoken=#{refreshToken} where nickname=#{nickName}
+    </update>
+
+    <update id="updatePoint">
+        update user set point=point+#{point} where nickname=#{nickname}
+    </update>
+
+    <update id="updateTempAuthNum">
+        update auth_temp set auth_key=#{authNum} where email=#{email}
+    </update>
+
+    <update id="updatePhone">
+        update phoneTBL set authNum=#{authNum} where phoneNum=#{phoneNum}
+    </update>
+
+    <delete id="deleteUser">
+        delete from user where email=#{email}
+    </delete>
+
+    <delete id="deleteTempRow">
+        delete from auth_temp where email=#{email}
+    </delete>
+
+    <delete id="deletePhoneRow">
+        delete from phoneTBL where phoneNum=#{phoneNum}
+    </delete>
+
+</mapper>

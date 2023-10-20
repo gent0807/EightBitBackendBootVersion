@@ -1,0 +1,425 @@
+use `eightbitdb`;
+
+create table `user`(
+	email varchar(200) not null,
+    password varchar(200) not null,
+    nickname varchar(50) not null,
+    role varchar(10) not null,
+    profileImgPath varchar(300) not null,
+    point int not null default 0,
+    accesstoken varchar(300),
+    refreshtoken varchar(300),
+    primary key (email),
+    unique key (nickname)
+);
+
+create table `board`(
+	seq int not null auto_increment,
+    title varchar(200) not null,
+    writer varchar(200) not null,
+    content varchar(200) not null,
+    regdate datetime not null default current_timestamp,
+    updatedate datetime not null default current_timestamp,
+    visit_count int not null default 0,
+    like_count int not null default 0,
+    reply_count int not null default 0,
+    total_comment int not null default 0,
+    attach_count int unsigned not null default 0,
+    abuse_report int not null default 0,
+    19_report int not null default 0,
+    incoporate_report int not null default 0,
+    primary key(seq),
+    unique key(writer, regdate),
+    foreign key(writer) references `user`(nickname)
+    on update cascade on delete cascade
+);
+
+create table `freeReply`(
+	seq int not null auto_increment,
+    original_writer varchar(200) not null,
+    original_regdate datetime not null,
+    replyer varchar(200) not null,
+    content varchar(200) not null,
+    regdate datetime not null default current_timestamp,
+    updatedate datetime not null default current_timestamp,
+    like_count int not null default 0,
+    recomment_count int not null default 0,
+    abuse_report int not null default 0,
+    19_report int not null default 0,
+    incoporate_report int not null default 0,
+    primary key(seq),
+    unique key(replyer, regdate),
+    foreign key(original_writer, original_regdate) references `board`(writer, regdate)
+    on update cascade on delete cascade,
+    foreign key(replyer) references `user`(nickname)
+    on update cascade
+    on delete cascade
+);
+
+create table `freeReComment`(
+	seq int not null auto_increment,
+    original_replyer varchar(200) not null,
+    original_regdate datetime not null,
+    reCommenter varchar(200) not null,
+    content varchar(200) not null,
+    regdate datetime not null default current_timestamp,
+    updatedate datetime not null default current_timestamp,
+    like_count int not null default 0,
+    abuse_report int not null default 0,
+    19_report int not null default 0,
+    incoporate_report int not null default 0,
+    primary key(seq),
+    unique key(reCommenter, regdate),
+    foreign key(original_replyer, original_regdate) references `freeReply`(replyer, regdate)
+    on update cascade on delete cascade,
+    foreign key(reCommenter) references `user`(nickname)
+    on update cascade
+    on delete cascade
+);
+
+create table `freeArticleView`(
+	viewer varchar(50) not null,
+    writer varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    viewdate datetime not null default current_timestamp,
+    boardtype varchar(50) not null default 'free',
+    foreign key(viewer) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(writer, regdate) references `board`(writer, regdate) on update cascade on delete cascade
+);
+
+
+create table `freeArticleLike`(
+	liker varchar(50) not null,
+    writer varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    foreign key(liker) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(writer, regdate) references `board`(writer, regdate) on update cascade on delete cascade
+);
+
+create table `freeReplyLike`(
+	liker varchar(50) not null,
+    replyer varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    foreign key(liker) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(replyer, regdate) references `freeReply`(replyer, regdate) on update cascade on delete cascade
+);
+
+
+create table `freeReCommentLike`(
+	liker varchar(50) not null,
+    reCommenter varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    foreign key(liker) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(reCommenter, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade
+);
+
+create table `freeArticleFileShare`(
+	id int not null primary key auto_increment,
+	uploader varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    storeFilename varchar(200) not null,
+    uploadFilename varchar(200) not null,
+    foreign key(uploader, regdate) references `board`(writer, regdate) on update cascade on delete cascade
+);
+
+create table `tag`(
+	id int unsigned not null primary key auto_increment,
+    tag varchar(80) not null,
+    unique key(tag)
+);
+
+
+create table `freeArticleTag`(
+	id int unsigned not null primary key auto_increment,
+	writer varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    tag varchar(80),
+    foreign key(writer, regdate) references `board`(writer, regdate) on update cascade on delete cascade,
+    foreign key(tag) references `tag`(tag) on update cascade on delete cascade
+);
+
+create table `freeArticleFileView`(
+	id int not null primary key auto_increment,
+	uploader varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    storeFilename varchar(200) not null,
+    uploadFilename varchar(200) not null,
+	foreign key(uploader, regdate) references `board`(writer, regdate) on update cascade on delete cascade
+);
+
+create table `freeReplyFileView`(
+	id int not null primary key auto_increment,
+	uploader varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    storeFilename varchar(200) not null,
+    uploadFilename varchar(200) not null,
+	foreign key(uploader, regdate) references `freeReply`(replyer, regdate) on update cascade on delete cascade
+);
+
+create table `freeReCommentFileView`(
+	id int not null primary key auto_increment,
+	uploader varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    storeFilename varchar(200) not null,
+    uploadFilename varchar(200) not null,
+	foreign key(uploader, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade
+);
+
+create table `follow`(
+	requester varchar(50) not null,
+    accepter varchar(50) not null,
+    foreign key(requester) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(accepter) references `user`(nickname) on update cascade on delete cascade
+);
+
+
+select * from `user`;
+select * from `board`;
+select * from `freeReply`;
+select * from `freeReComment`;
+select * from `freeArticleView`;
+select * from `freeArticleLike`;
+select * from `freeReplyLike`;
+select * from `freeReCommentLike`;
+select * from `freearticlefileshare`;
+select * from `freearticlefileview`;
+select * from `freereplyfileview`;
+select * from `freerecommentfileview`;
+select * from `follow`;
+
+select * from information_schema.table_constraints where constraint_schema = 'eightbitdb';
+
+
+set sql_safe_updates=0;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpReply
+	AFTER  INSERT ON `freeReply`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET writerTemp = NEW.original_writer;
+		SET regdateTemp = NEW.original_regdate;
+
+		update `board` set `reply_count`= `reply_count`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownReply
+	AFTER  DELETE ON `freeReply`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET writerTemp = OLD.original_writer;
+		SET regdateTemp = OLD.original_regdate;
+
+		update `board` set `reply_count`= `reply_count`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpLike
+	AFTER  INSERT ON `freeArticleLike`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET writerTemp = NEW.writer;
+		SET regdateTemp = NEW.regdate;
+
+		update `board` set `likecount`= `likecount`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownLike
+	AFTER  DELETE ON `freeArticleLike`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET writerTemp = OLD.writer;
+		SET regdateTemp = OLD.regdate;
+
+		update `board` set `likecount`= `likecount`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpTotalCommentCount
+	AFTER  INSERT ON `freeReply`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET writerTemp = NEW.original_writer;
+		SET regdateTemp = NEW.original_regdate;
+
+		update `board` set `totalcomment`= `totalcomment`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownTotalCommentCount
+	AFTER  DELETE ON `freeReply`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET writerTemp = OLD.original_writer;
+		SET regdateTemp = OLD.original_regdate;
+
+		update `board` set `totalcomment`= `totalcomment`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpTotalCommentCount2
+	AFTER  INSERT ON `freeReComment`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET replyerTemp = NEW.original_replyer;
+		SET regdateTemp = NEW.original_regdate;
+
+		update `board` set `totalcomment`= `totalcomment`+1
+			where `writer`= (select `original_writer` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp)
+				and `regdate`= (select `original_regdate` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp);
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownTotalCommentCount2
+	AFTER  DELETE ON `freeReComment`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET replyerTemp = OLD.original_replyer;
+		SET regdateTemp = OLD.original_regdate;
+
+		update `board` set `totalcomment`= `totalcomment`-1
+			where `writer`= (select `original_writer` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp)
+				and `regdate`= (select `original_regdate` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp);
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpReComment
+	AFTER  INSERT ON `freeReComment`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET replyerTemp = NEW.original_replyer;
+		SET regdateTemp = NEW.original_regdate;
+
+		update `freeReply` set `recomment_count`= `recomment_count`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownReComment
+	AFTER  DELETE ON `freeReComment`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET replyerTemp = OLD.original_replyer;
+		SET regdateTemp = OLD.original_regdate;
+
+		update `freeReply` set `recomment_count`= `recomment_count`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpReplyLike
+	AFTER  INSERT ON `freeReplyLike`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET replyerTemp = NEW.replyer;
+		SET regdateTemp = NEW.regdate;
+
+		update `freeReply` set `likecount`= `likecount`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownReplyLike
+	AFTER  DELETE ON `freeReplyLike`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET replyerTemp = OLD.replyer;
+		SET regdateTemp = OLD.regdate;
+
+		update `freeReply` set `likecount`= `likecount`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpArticleAttach
+	AFTER INSERT ON `freearticlefileshare`
+	FOR EACH ROW
+	BEGIN
+		DECLARE uploaderTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET uploaderTemp = NEW.uploader;
+		SET regdateTemp = NEW.regdate;
+
+		update `board` set `attach_count`= `attach_count`+1 where `writer`=uploaderTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownArticleAttach
+	AFTER DELETE ON `freearticlefileshare`
+	FOR EACH ROW
+	BEGIN
+		DECLARE uploaderTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+
+		SET uploaderTemp = OLD.uploader;
+		SET regdateTemp = OLD.regdate;
+
+		update `board` set `attach_count`= `attach_count`-1 where `writer`=uploaderTemp and `regdate`=regdateTemp;
+
+	END $$
+DELIMITER ;
+
+
+show triggers;
+drop trigger if exists autoCountDownLike;
