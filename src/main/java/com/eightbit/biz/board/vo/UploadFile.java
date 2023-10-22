@@ -1,8 +1,12 @@
 package com.eightbit.biz.board.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UploadFile {
     private int id;
     private String uploader;
@@ -10,10 +14,10 @@ public class UploadFile {
     private String storeFilename;
     private String uploadFilename;
 
-    public UploadFile(String writer, String regdate, String storeFileName, String originFilename) {
+    public UploadFile(String writer, String regdate, String storeFilename, String originFilename) {
         this.uploader=writer;
         this.regdate=regdate;
-        this.storeFilename=storeFileName;
+        this.storeFilename=storeFilename;
         this.uploadFilename=originFilename;
     }
 }

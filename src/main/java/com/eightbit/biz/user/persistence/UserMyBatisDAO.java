@@ -33,7 +33,7 @@ public class UserMyBatisDAO {
     private String secretKey;
     private Long expiredMs= 1000*60*60l;
 
-    public UserVO getUserProfileImagePath(String nickname){
+    public String getUserProfileImagePath(String nickname){
         return mybatis.selectOne("UserMyBatisDAO.getUserProfileImagePath", nickname);
     }
 

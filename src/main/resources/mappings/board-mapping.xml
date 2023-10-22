@@ -33,8 +33,12 @@
         select * from freeArticleFileShare where uploader=#{uploader} and regdate=#{regdate}
     </select>
 
-    <select id="getUploadFile" resultType="uploadFile">
+    <select id="getAttachFile" resultType="uploadFile">
         select * from freeArticleFileShare where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+    </select>
+
+    <select id="getViewFile" resultType="uploadFile">
+        select * from freeArticleFileView where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
     </select>
 
     <select id="getReply" resultType="reply">
@@ -194,6 +198,10 @@
 
     <delete id="deleteArticle">
         delete from board where writer=#{writer} and regdate=#{regdate}
+    </delete>
+
+    <delete id="deleteArticleShareFile">
+        delete from freeArticleFileShare where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
     </delete>
 
     <delete id="deleteReply">

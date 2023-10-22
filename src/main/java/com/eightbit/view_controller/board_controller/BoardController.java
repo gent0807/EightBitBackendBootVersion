@@ -13,15 +13,18 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import org.springframework.security.core.parameters.P;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
@@ -40,8 +43,6 @@ public class BoardController {
     private final BoardService boardService;
 
     private final UserService userService;
-
-    private final BCryptPasswordEncoder encoder;
 
     @GetMapping(value = "/articles")
     public ResponseEntity<List<BoardVO>> getList(){
@@ -81,14 +82,13 @@ public class BoardController {
         return  ResponseEntity.ok().body(boardService.getAttachList(uploadFile));
     }
 
-    @GetMapping(value = "/article/attach/{id}/{writer}/{regdate}")
-    public ResponseEntity<Resource> downloadAttachFile(@PathVariable int id, @PathVariable String writer, @PathVariable String regdate,
+    @GetMapping(value = "/article/attach/{id}/{uploader}/{regdate}")
+    public ResponseEntity<Resource> downloadAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
                                                        @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
-
-        uploadFile.setUploader(writer);
+        uploadFile.setUploader(uploader);
         uploadFile.setRegdate(regdate);
         uploadFile.setId(id);
-        uploadFile=boardService.getUploadFile(uploadFile);
+        uploadFile=boardService.getAttachFile(uploadFile);
         String storeFilename=uploadFile.getStoreFilename();
         String uploadFilename=uploadFile.getUploadFilename();
         String encodedUploadFileName= UriUtils.encode(uploadFilename, StandardCharsets.UTF_8);
@@ -96,12 +96,25 @@ public class BoardController {
 
         regdate=regdate.replace(":","");
 
-
-        UrlResource resource=new UrlResource("file:"+filepath+writer+"/board/article/"+regdate+"/"+storeFilename);
+        UrlResource resource=new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/sharefiles/"+storeFilename);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(resource);
+    }
+
+    @GetMapping("/article/view/{id}/{uploader}/{regdate}")
+    public Resource downloadViewFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
+                                     @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
+        uploadFile.setUploader(uploader);
+        uploadFile.setRegdate(regdate);
+        uploadFile.setId(id);
+        uploadFile=boardService.getViewFile(uploadFile);
+        String storeFilename=uploadFile.getStoreFilename();
+
+        regdate=regdate.replace(":","");
+
+        return new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/viewfiles/"+storeFilename);
     }
 
     @GetMapping(value = "article/reply")
@@ -158,10 +171,10 @@ public class BoardController {
 
 
     @PostMapping(value = "/article/shareFiles")
-    public void insertArticleShareFiles(HttpServletRequest request, @RequestParam(value = "writer", required = true) String writer,
-                                        @RequestParam(value = "regdate", required = true) String regdate,
-                                        @RequestParam(value = "file", required = true) List<MultipartFile> files, String token,
-                                        @Value("${file.dir}") String dir) throws IOException, ServletException {
+    public void insertArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
+                                        @RequestParam(value="regdate") String regdate,
+                                        @RequestParam(value="files") List<MultipartFile> files,
+                                        String token, @Value("${file.dir}") String dir) throws IOException, ServletException {
 
         Collection<Part> parts=request.getParts();
         log.info("parts={}", parts);
@@ -183,6 +196,18 @@ public class BoardController {
         if(checkAccessToken(request, token, writer)) {
             boardService.registerArticleShareFiles(writer, regdate, files, dir);
         }
+    }
+
+    @PostMapping(value="/article/viewFiles")
+    public ResponseEntity<String> insertArticleViewFile(HttpServletRequest request, @RequestParam(value="writer") String writer,
+                                                         @RequestParam(value = "regdate") String regdate,
+                                                         @RequestParam(value ="files") List<MultipartFile> files,
+                                                         String token, @Value("${file.dir}") String dir){
+        if(checkAccessToken(request, token, writer)){
+            return ResponseEntity.ok().body(boardService.registerArticleViewFiles(writer, regdate, files,dir));
+        }
+
+        return ResponseEntity.ok().body(null);
     }
 
     @PostMapping(value="/article/reply")
@@ -238,7 +263,7 @@ public class BoardController {
         if(checkAccessToken(request,token,writer)){
             boardVO.setWriter(writer);
             boardVO.setRegdate(regdate);
-            boardService.modify(boardVO);
+            boardService.modifyArticle(boardVO);
         }
     }
 
@@ -339,7 +364,29 @@ public class BoardController {
         if(checkAccessToken(request,  token, writer)|| role.equals("ADMIN")){
             boardVO.setWriter(writer);
             boardVO.setRegdate(regdate);
-            boardService.remove(boardVO);
+            boardService.removeArticle(boardVO);
+        }
+    }
+
+//    @DeleteMapping(value="/article/shareFiles/{id}/{writer}/{regdate}")
+//    public void deleteArticleShareFile(HttpServletRequest request, String token, @PathVariable int id,
+//                                       @PathVariable String writer, @PathVariable String regdate, UploadFile uploadFile){
+//        System.out.println(regdate);
+//        if(checkAccessToken(request, token, writer)){
+//            uploadFile.setId(id);
+//            uploadFile.setUploader(writer);
+//            uploadFile.setRegdate(regdate);
+//            boardService.removeArticleShareFile(uploadFile);
+//        }
+//    }
+
+    @DeleteMapping(value="/article/shareFiles")
+    public void deleteArticleShareFile(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
+        if(checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
+
+            for(UploadFile deleteFile : deleteFileList){
+                boardService.removeArticleShareFile(deleteFile);
+            }
         }
     }
 

@@ -4,12 +4,18 @@ import com.eightbit.biz.board.inter.BoardService;
 import com.eightbit.biz.board.persistence.BoardMyBatisDAO;
 import com.eightbit.biz.board.vo.*;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +23,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Primary
+@PropertySource("classpath:upload.properties")
 public class BoardServiceImpl implements BoardService {
+
+    @Value("${file.dir}")
+    private String dir;
 
     private final BoardMyBatisDAO boardMyBatisDAO;
 
@@ -51,9 +61,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public UploadFile getUploadFile(UploadFile uploadFile){
-        return boardMyBatisDAO.getUploadFile(uploadFile);
+    public UploadFile getAttachFile(UploadFile uploadFile){
+        return boardMyBatisDAO.getAttachFile(uploadFile);
     }
+
+    @Override
+    public UploadFile getViewFile(UploadFile uploadFile) {
+        return boardMyBatisDAO.getViewFile(uploadFile);
+    }
+
     @Override
     public ReplyVO getReply(ReplyVO replyVO) {
         return boardMyBatisDAO.getReply(replyVO);
@@ -93,15 +109,13 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void registerArticleShareFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException {
-        String filepath=setPath(writer, regdate, dir);
-
+        String storeRegdate=regdate.replace(":","");
+        String filepath=setPath(writer, storeRegdate, dir);
+        System.out.println("enter boardservice register ArticleShareFiles, filepath : "+ filepath );
         createDir(filepath);
 
-        List<UploadFile> sharefiles=storeFiles(writer, regdate, filepath, files);
+        storeFiles(writer, regdate, filepath, files);
 
-        if(sharefiles.size()>0){
-            boardMyBatisDAO.registerArticleShareFiles(sharefiles);
-        }
     }
 
 
@@ -111,41 +125,44 @@ public class BoardServiceImpl implements BoardService {
 
 
     public void createDir(String path) {
+
+
         File folder=new File(path);
 
         if (!folder.exists()) {
             try {
                 folder.mkdirs();
             } catch (Exception e) {
+
                 e.getStackTrace();
+
             }
         }
+
     }
 
 
-    public List<UploadFile> storeFiles(String writer, String regdate, String filepath, List<MultipartFile> files) throws IOException {
+    public void storeFiles(String writer, String regdate, String filepath, List<MultipartFile> files) throws IOException {
 
-        List<UploadFile> sharefiles = new ArrayList<>();
 
         for (MultipartFile mf : files) {
 
             if(!(mf.isEmpty())) {
-
+                System.out.println("mf :"+mf);
                 String originFilename = mf.getOriginalFilename();
-                String storeFileName = createStoreFilename(originFilename);
-
-                File f = new File(filepath + "/"+storeFileName);
+                System.out.println("originFilename:"+originFilename);
+                String storeFilename = createStoreFilename(originFilename);
+                System.out.println("storeFilename:"+storeFilename);
+                File f = new File(filepath + "/"+storeFilename);
 
                 mf.transferTo(f);
 
+                UploadFile sharefile = new UploadFile(writer, regdate, storeFilename, originFilename);
 
-                UploadFile uploadFile = new UploadFile(writer, regdate, storeFileName, originFilename);
-
-                sharefiles.add(uploadFile);
+                boardMyBatisDAO.registerArticleShareFile(sharefile);
             }
         }
 
-        return sharefiles;
 
     }
 
@@ -155,7 +172,7 @@ public class BoardServiceImpl implements BoardService {
 
         String uuid= UUID.randomUUID().toString();
 
-        return uuid+ext;
+        return uuid+"."+ext;
     }
 
     private String extracted(String originFilename){
@@ -193,8 +210,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void modify(BoardVO boardVO) {
-        boardMyBatisDAO.modify(boardVO);
+    public void modifyArticle(BoardVO boardVO) {
+        boardMyBatisDAO.modifyArticle(boardVO);
     }
     @Override
     public void modifyReply(ReplyVO replyVO) {
@@ -251,9 +268,58 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void remove(BoardVO boardVO) {
-        boardMyBatisDAO.remove(boardVO);
+    public void removeArticle(BoardVO boardVO) {
+        if(boardMyBatisDAO.removeArticle(boardVO)){
+            removeFilesAndFolder(boardVO.getWriter(), boardVO.getRegdate());
+        }
     }
+
+    @Override
+    public void removeArticleShareFile(UploadFile uploadFile) {
+        if(boardMyBatisDAO.removeArticleShareFile(uploadFile)){
+            String regdate=uploadFile.getRegdate().replace(":","");
+            String filepath=dir+uploadFile.getUploader()+"/board/article/"+regdate+"/sharefiles";
+
+            File folder=new File(filepath);
+
+            if(folder.exists()){
+                File targetfile=new File(filepath+"/"+uploadFile.getStoreFilename());
+
+                if(targetfile.isFile()){
+                    targetfile.delete();
+                }
+
+                File[] list=folder.listFiles();
+
+                if(list.length==0){
+                    File parentFoler=new File(dir+uploadFile.getUploader()+"/board/article/"+regdate);
+                    folder.delete();
+                    parentFoler.delete();
+                }
+            }
+
+
+        }
+    }
+
+    public void removeFilesAndFolder(String writer, String regdate){
+        regdate=regdate.replace(":","");
+        String filepath1=dir+writer+"/board/article/"+regdate+"/sharefiles";
+        String filepath2=dir+writer+"/board/article/"+regdate;
+        File folder1=new File(filepath1);
+        File folder2=new File(filepath2);
+        if(folder1.exists()){
+            File[] folder_list = folder1.listFiles();
+
+            for (int j = 0; j < folder_list.length; j++) {
+                folder_list[j].delete(); //파일 삭제
+            }
+
+            folder1.delete();
+            folder2.delete();
+        }
+    }
+
     @Override
     public void removeReply(ReplyVO replyVO) {
         boardMyBatisDAO.removeReply(replyVO);

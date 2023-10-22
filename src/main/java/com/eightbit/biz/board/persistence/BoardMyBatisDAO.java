@@ -37,8 +37,12 @@ public class BoardMyBatisDAO {
     public List<UploadFile> getAttachList(UploadFile uploadFile){
         return mybatis.selectList("BoardMyBatisDAO.getAttachList", uploadFile);
     }
-    public UploadFile getUploadFile(UploadFile uploadFile){
-        return mybatis.selectOne("BoardMyBatisDAO.getUploadFile", uploadFile);
+    public UploadFile getAttachFile(UploadFile uploadFile){
+        return mybatis.selectOne("BoardMyBatisDAO.getAttachFile", uploadFile);
+    }
+
+    public UploadFile getViewFile(UploadFile uploadFile){
+        return mybatis.selectOne("BoardMyBatisDAO.getViewFile", uploadFile);
     }
     public ReplyVO getReply(ReplyVO replyVO){
         return  mybatis.selectOne("BoardMyBatisDAO.getReply", replyVO);
@@ -63,10 +67,8 @@ public class BoardMyBatisDAO {
         mybatis.insert("BoardMyBatisDAO.insertArticle", boardVO);
     }
 
-    public void registerArticleShareFiles(List<UploadFile> sharefiles){
-        for(UploadFile sharefile: sharefiles){
-            mybatis.insert("BoardMyBatisDAO.insertArticleFileShare", sharefile);
-        }
+    public void registerArticleShareFile(UploadFile sharefile){
+        mybatis.insert("BoardMyBatisDAO.insertArticleFileShare", sharefile);
     }
     public ReplyVO registerReply(ReplyVO replyVO){
         mybatis.insert("BoardMyBatisDAO.insertReply", replyVO);
@@ -103,7 +105,7 @@ public class BoardMyBatisDAO {
         return mybatis.selectList("BoardMyBatisDAO.getReCommentLikers", reCommentLikeVO);
     }
 
-    public void modify(BoardVO boardVO) {
+    public void modifyArticle(BoardVO boardVO) {
         mybatis.update("BoardMyBatisDAO.updateArticle", boardVO);
     }
 
@@ -148,8 +150,13 @@ public class BoardMyBatisDAO {
         mybatis.update("BoardMyBatisDAO.updateIncoporateReComment", reCommentVO);
     }
 
-    public void remove(BoardVO boardVO){
+    public boolean removeArticle(BoardVO boardVO){
         mybatis.delete("BoardMyBatisDAO.deleteArticle", boardVO);
+        return true;
+    }
+    public boolean removeArticleShareFile(UploadFile shareFile){
+        mybatis.delete("BoardMyBatisDAO.deleteArticleShareFile",shareFile);
+        return true;
     }
 
     public void removeReply(ReplyVO replyVO){

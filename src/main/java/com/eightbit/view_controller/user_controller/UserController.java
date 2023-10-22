@@ -41,13 +41,9 @@ public class UserController {
 
     private final UserService userService;
 
-    private final BCryptPasswordEncoder encoder;
-
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-
     private final MailSendService mailSendService;
-
 
     private final PhoneSendService phoneSendService;
 
@@ -55,8 +51,11 @@ public class UserController {
     @ResponseBody
     @GetMapping(value = "/profileImg/{user}")
     public Resource getUserProfileImg(@PathVariable String user, @Value("${file.dir}") String filepath) throws MalformedURLException {
-        UserVO userVO=userService.getUserProfileImagePath(user);
-        return new UrlResource("file:"+filepath+user+"/profileImage/"+userVO.getProfileImgPath());
+        if(user==null){
+            return new UrlResource("file:"+filepath+"default.jpg");
+        }
+        String imagePath=userService.getUserProfileImagePath(user);
+        return new UrlResource("file:"+filepath+user+"/profileImage/"+imagePath);
     }
 
     @GetMapping(value = "/role")

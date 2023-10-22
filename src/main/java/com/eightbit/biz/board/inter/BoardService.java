@@ -1,9 +1,13 @@
 package com.eightbit.biz.board.inter;
 
 import com.eightbit.biz.board.vo.*;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 public interface BoardService {
@@ -13,7 +17,8 @@ public interface BoardService {
     public List<ReCommentVO> getReComments(ReCommentVO reCommentVO);
     public BoardVO getArticle(BoardVO boardVO);
     public List<UploadFile> getAttachList(UploadFile uploadFile);
-    public UploadFile getUploadFile(UploadFile uploadFile);
+    public UploadFile getAttachFile(UploadFile uploadFile);
+    public UploadFile getViewFile(UploadFile uploadFile);
     public ReplyVO getReply(ReplyVO replyVO);
     public ReCommentVO getReComment(ReCommentVO reCommentVO);
     public List<String> getArticleLikers(BoardVO boardVO);
@@ -28,7 +33,8 @@ public interface BoardService {
     public List<String> registerReplyLike(ReplyLikeVO replyLikeVO);
     public List<String> registerReCommentLike(ReCommentLikeVO reCommentLikeVO);
     public void registerArticleShareFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException;
-    public void modify(BoardVO boardVO);
+    public String registerArticleViewFiles(String writer, String regdate, List<MultipartFile> files, String dir);
+    public void modifyArticle(BoardVO boardVO);
     public void modifyReply(ReplyVO replyVO);
     public void modifyReComment(ReCommentVO reCommentVO);
     public void modifyAbuseArticle(BoardVO boardVO);
@@ -40,7 +46,8 @@ public interface BoardService {
     public void modifyAbuseReComment(ReCommentVO reCommentVO);
     public void modify19ReComment(ReCommentVO reCommentVO);
     public void modifyIncoporateReComment(ReCommentVO reCommentVO);
-    public void remove(BoardVO boardVO);
+    public void removeArticle(BoardVO boardVO);
+    public void removeArticleShareFile(UploadFile uploadFile);
     public void removeReply(ReplyVO replyVO);
     public void removeReComment(ReCommentVO reCommentVO);
     public List<String> removeArticleLike(ArticleLikeVO articleLikeVO);

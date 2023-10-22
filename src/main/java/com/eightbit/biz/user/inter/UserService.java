@@ -5,7 +5,7 @@ import com.eightbit.biz.user.vo.*;
 import java.io.IOException;
 
 public interface UserService {
-        public UserVO getUserProfileImagePath(String nickname);
+        public String getUserProfileImagePath(String nickname);
         public String getUserRole(String nickname);
         public String getPassword(String nickname);
         public String getAccessToken(String writer);

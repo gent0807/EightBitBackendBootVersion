@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public UserVO getUserProfileImagePath(String nickname){
+    public String getUserProfileImagePath(String nickname){
         return userMyBatisDAO.getUserProfileImagePath(nickname);
     }
 
@@ -73,13 +73,13 @@ public class UserServiceImpl implements UserService {
         UserVO user=loginResult.getUser();
         TokenInfo tokenInfo;
         if(loginState.equals("no")||loginState.equals("emailok")){
-            tokenInfo=new TokenInfo(loginState, null,null,null,null, null,null, 0);
+            tokenInfo=new TokenInfo(loginState, null,null,null,null, null, 0);
             return tokenInfo;
         }
         else if(loginState.equals("allok")){
             UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(user.getNickname(),user.getPassword());
             Authentication authentication=authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            tokenInfo = jwtTokenProvider.generateToken(authentication, loginState, user.getNickname(), user.getRole(),user.getProfileImgPath(),user.getPoint());
+            tokenInfo = jwtTokenProvider.generateToken(authentication, loginState, user.getNickname(), user.getRole(),user.getPoint());
             updateToken(tokenInfo);
             return tokenInfo;
         }

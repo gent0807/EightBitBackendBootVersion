@@ -40,7 +40,7 @@
         select nickname, point from user where nickname=#{nickname}
     </select>
 
-    <select id="getUserProfileImagePath" resultType="user">
+    <select id="getUserProfileImagePath" resultType="string">
         select profileImgPath from user where nickname=#{nickname}
     </select>
 

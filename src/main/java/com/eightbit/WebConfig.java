@@ -1,43 +1,33 @@
 package com.eightbit;
 
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.Filter;
+
+@Configuration
 public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
 
-    /*
+//    @Bean
+//    public FilterRegistrationBean someFilterRegistration() {
+//
+//      FilterRegistrationBean registration = new FilterRegistrationBean();
+//      registration.setFilter(someFilter());
+//      registration.addUrlPatterns("/*");
+//      registration.addInitParameter("paramName", "paramValue");
+//      registration.setName("Multipart Filter");
+//      registration.setOrder(1);
+//      return registration;
+//    }
 
-    @Override
-    protected void customizeRegistration(ServletRegistration.Dynamic registration) {
-        registration.setInitParameter("throwExceptionIfNoHandlerFound","true");
-        MultipartConfigElement multipartConfig=new MultipartConfigElement("C:\\upload\\temp", 20971520, 41943040, 20971520);
-        registration.setMultipartConfig(multipartConfig);
-    }
+//   public Filter someFilter() {
+//        return new MultipartFilter();
+//   }
 
-     */
-
-    /*
-
-    @Override
-    protected FilterRegistration.Dynamic registerServletFilter(ServletContext servletContext, Filter filter) {
-        return super.registerServletFilter(servletContext, filter);
-    }
-
-     */
-    /*
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        FilterRegistration.Dynamic filter= servletContext.addFilter("MultipartFilter", MultipartFilter.class);
-        filter.addMappingForUrlPatterns(null,false,"/*");
-        super.onStartup(servletContext);
-    }
-     */
-    /*
-    @Override
-    public Filter[] getServletFilters(){
-        return new Filter[] {new MultipartFilter()};
-    }
-    */
     @Override
     protected Class<?>[] getRootConfigClasses(){
         return  new Class[] {RootConfig.class, SecurityConfig.class};

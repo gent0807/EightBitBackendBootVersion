@@ -2,6 +2,8 @@ package com.eightbit.biz.user.util;
 
 import com.eightbit.biz.user.vo.TokenInfo;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -20,14 +23,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private final String key;
+    private final Key key;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-        this.key = secretKey;
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
-    public TokenInfo generateToken(Authentication authentication,String loginState,String nickName,String role,String profileImgPath, int point) {
+    public TokenInfo generateToken(Authentication authentication,String loginState,String nickName,String role, int point) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -57,7 +61,6 @@ public class JwtTokenProvider {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickName(nickName)
-                .profileImgPath(profileImgPath)
                 .point(point)
                 .build();
     }
