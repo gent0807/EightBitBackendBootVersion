@@ -21,6 +21,14 @@ public class BoardMyBatisDAO {
         return mybatis.selectList("BoardMyBatisDAO.getUserArticles", writer);
     }
 
+    public BoardVO getOriginWriterAndRegdate(ReplyVO replyVO){
+        return mybatis.selectOne("BoardMyBatisDAO.getOriginWriterAndRegdate", replyVO);
+    }
+
+    public ReplyVO getOriginReplyerAndRegdate(ReCommentVO reCommentVO){
+        return mybatis.selectOne("BoardMyBatisDAO.getOriginReplyerAndRegdate",reCommentVO);
+    }
+
 
     public List<ReplyVO> getReplies(ReplyVO replyVO){
         return mybatis.selectList("BoardMyBatisDAO.getArticleReplies", replyVO);
@@ -67,9 +75,27 @@ public class BoardMyBatisDAO {
         mybatis.insert("BoardMyBatisDAO.insertArticle", boardVO);
     }
 
-    public void registerArticleShareFile(UploadFile sharefile){
-        mybatis.insert("BoardMyBatisDAO.insertArticleFileShare", sharefile);
+
+    public Integer registerFile(UploadFile file, String type){
+        if(type.equals("article_share")){
+            mybatis.insert("BoardMyBatisDAO.insertArticleShareFile", file);
+            return null;
+        }
+        else if(type.equals("article_view")){
+            mybatis.insert("BoardMyBatisDAO.insertArticleViewFile", file);
+            return mybatis.selectOne("BoardMyBatisDAO.getArticleViewFileId",file);
+        }
+        else if(type.equals("reply_view")){
+            mybatis.insert("BoardMyBatisDAO.insertReplyViewFile", file);
+            return mybatis.selectOne("BoardMyBatisDAO.getReplyViewFileId",file);
+        }
+        else if(type.equals("reComment_view")){
+            mybatis.insert("BoardMyBatisDAO.insertReCommentViewFile", file);
+            return mybatis.selectOne("BoardMyBatisDAO.getReCommentViewFileId",file);
+        }
+        return null;
     }
+
     public ReplyVO registerReply(ReplyVO replyVO){
         mybatis.insert("BoardMyBatisDAO.insertReply", replyVO);
         return mybatis.selectOne("BoardMyBatisDAO.getReplyRegdateAndUpdatedate", mybatis.selectOne("BoardMyBatisDAO.getSeqOfReply",replyVO.getReplyer()));

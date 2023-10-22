@@ -14,4 +14,9 @@ public class ReCommentVO {
     private String updatedate;
     private String[] nomalfiles;
     private String[] sharefiles;
+
+    public ReCommentVO(String reCommenter, String regdate){
+        this.reCommenter=reCommenter;
+        this.regdate=regdate;
+    }
 }

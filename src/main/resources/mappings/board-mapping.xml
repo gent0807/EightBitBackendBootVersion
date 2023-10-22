@@ -128,8 +128,12 @@
         insert into freeReCommentLike values (#{liker},#{reCommenter},#{regdate})
     </insert>
 
-    <insert id="insertArticleFileShare">
+    <insert id="insertArticleShareFile">
         insert into freeArticleFileShare(uploader, regdate, storeFilename, uploadFilename) values(#{uploader}, #{regdate}, #{storeFilename}, #{uploadFilename})
+    </insert>
+
+    <insert id="insertArticleViewFile">
+        insert into freeArticleViewFile(uploader, regdate, storeFilename, uploadFilename) values(#{uploader}, #{regdate}, #{storeFilename},#{uploadFilename})
     </insert>
 
     <update id="updateArticle">

@@ -110,19 +110,68 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void registerArticleShareFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException {
         String storeRegdate=regdate.replace(":","");
-        String filepath=setPath(writer, storeRegdate, dir);
-        System.out.println("enter boardservice register ArticleShareFiles, filepath : "+ filepath );
+        String filepath=setShareFilePath(writer, storeRegdate, dir);
         createDir(filepath);
 
-        storeFiles(writer, regdate, filepath, files);
+        storeShareFiles(writer, regdate, filepath, files, "article_share");
 
     }
 
+    @Override
+    public List<UploadFile> registerArticleViewFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException {
+        String storeRegdate=regdate.replace(":","");
+        String filepath=setViewFilePath(writer, storeRegdate, dir);
+        createDir(filepath);
 
-    public String setPath(String writer, String regdate, String dir) {
+        return storeViewFiles(writer,regdate,filepath,files, "article_view");
+    }
+
+    @Override
+    public List<UploadFile> registerReplyViewFiles(String replyer, String regdate, List<MultipartFile> files, String dir) throws IOException {
+        String storeRegdate=regdate.replace(":","");
+        String filepath=setReplyViewFilePath(replyer, storeRegdate, dir);
+        createDir(filepath);
+
+        return storeViewFiles(replyer, regdate, filepath, files,"reply_view");
+    }
+
+    @Override
+    public List<UploadFile> registerReCommentViewFiles(String reCommenter, String regdate, List<MultipartFile> files, String dir) throws IOException {
+        String storeRegdate=regdate.replace(":","");
+        String filepath=setViewReCommentFilePath(reCommenter, storeRegdate, dir);
+        createDir(filepath);
+
+        return storeViewFiles(reCommenter, regdate, filepath, files,"reComment_view");
+    }
+
+    public String setShareFilePath(String writer, String regdate, String dir) {
         return dir+writer + "/board/article/" + regdate + "/sharefiles";
     }
 
+    public String setViewFilePath(String writer, String regdate, String dir) {
+        return dir+writer + "/board/article/" + regdate + "/viewfiles";
+    }
+
+    public String setReplyViewFilePath(String replyer, String regdate, String dir){
+
+        BoardVO boardVO=boardMyBatisDAO.getOriginWriterAndRegdate(new ReplyVO(replyer,regdate));
+        String origin_writer=boardVO.getWriter();
+        String origin_regdate=boardVO.getRegdate();
+
+        return dir+origin_writer+"/board/article/"+origin_regdate+"/reply/"+replyer+"/"+regdate+"/viewfiles";
+    }
+
+    public String setViewReCommentFilePath(String reCommenter, String regdate, String dir){
+        ReplyVO replyVO=boardMyBatisDAO.getOriginReplyerAndRegdate(new ReCommentVO(reCommenter, regdate));
+        String origin_replyer=replyVO.getReplyer();
+        String origin_reply_regdate=replyVO.getRegdate();
+
+        BoardVO boardVO=boardMyBatisDAO.getOriginWriterAndRegdate(new ReplyVO(origin_replyer,origin_reply_regdate));
+        String origin_writer=boardVO.getWriter();
+        String origin_regdate=boardVO.getRegdate();
+
+        return dir+origin_writer+"/board/article/"+origin_regdate+"/reply/"+origin_replyer+"/"+origin_reply_regdate+"/reComment/"+reCommenter+"/"+regdate+"/viewfiles";
+    }
 
     public void createDir(String path) {
 
@@ -141,29 +190,44 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-
-    public void storeFiles(String writer, String regdate, String filepath, List<MultipartFile> files) throws IOException {
-
+    public void storeShareFiles(String writer, String regdate, String filepath, List<MultipartFile> files, String type) throws IOException {
 
         for (MultipartFile mf : files) {
 
             if(!(mf.isEmpty())) {
-                System.out.println("mf :"+mf);
-                String originFilename = mf.getOriginalFilename();
-                System.out.println("originFilename:"+originFilename);
-                String storeFilename = createStoreFilename(originFilename);
-                System.out.println("storeFilename:"+storeFilename);
-                File f = new File(filepath + "/"+storeFilename);
-
-                mf.transferTo(f);
-
-                UploadFile sharefile = new UploadFile(writer, regdate, storeFilename, originFilename);
-
-                boardMyBatisDAO.registerArticleShareFile(sharefile);
+                UploadFile sharefile = storeFile(mf, writer, regdate, filepath);
+                boardMyBatisDAO.registerFile(sharefile, type);
             }
         }
+    }
 
+    public List<UploadFile> storeViewFiles(String writer, String regdate, String filepath, List<MultipartFile> files, String type) throws IOException {
 
+        List<UploadFile> viewfiles=new ArrayList<>();
+
+        for (MultipartFile mf : files) {
+
+            if(!(mf.isEmpty())) {
+                UploadFile viewfile = storeFile(mf, writer, regdate, filepath);
+                viewfile.setId(boardMyBatisDAO.registerFile(viewfile, type));
+                viewfiles.add(viewfile);
+            }
+        }
+        return viewfiles;
+
+    }
+
+    public UploadFile storeFile(MultipartFile mf, String writer, String regdate, String filepath) throws IOException {
+        System.out.println("mf :"+mf);
+        String originFilename = mf.getOriginalFilename();
+        System.out.println("originFilename:"+originFilename);
+        String storeFilename = createStoreFilename(originFilename);
+        System.out.println("storeFilename:"+storeFilename);
+        File f = new File(filepath + "/"+storeFilename);
+
+        mf.transferTo(f);
+
+        return new UploadFile(writer, regdate, storeFilename, originFilename);
     }
 
 

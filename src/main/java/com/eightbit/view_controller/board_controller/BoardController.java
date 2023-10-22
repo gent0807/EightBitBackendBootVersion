@@ -176,22 +176,6 @@ public class BoardController {
                                         @RequestParam(value="files") List<MultipartFile> files,
                                         String token, @Value("${file.dir}") String dir) throws IOException, ServletException {
 
-        Collection<Part> parts=request.getParts();
-        log.info("parts={}", parts);
-
-        for(Part part: parts){
-            log.info("=== PART ===");
-            log.info("name={}", part.getName());
-
-            Collection<String> headerNames = part.getHeaderNames();
-            for (String headerName : headerNames) {
-                log.info("header {}: {}", headerName,
-                        part.getHeader(headerName));
-            }
-
-            log.info("submittedFileName={}", part.getSubmittedFileName());
-            log.info("size={}", part.getSize()); //part body size
-        }
 
         if(checkAccessToken(request, token, writer)) {
             boardService.registerArticleShareFiles(writer, regdate, files, dir);
@@ -199,14 +183,36 @@ public class BoardController {
     }
 
     @PostMapping(value="/article/viewFiles")
-    public ResponseEntity<String> insertArticleViewFile(HttpServletRequest request, @RequestParam(value="writer") String writer,
+    public ResponseEntity<List<UploadFile>> insertArticleViewFiles(HttpServletRequest request, @RequestParam(value="writer") String writer,
                                                          @RequestParam(value = "regdate") String regdate,
                                                          @RequestParam(value ="files") List<MultipartFile> files,
-                                                         String token, @Value("${file.dir}") String dir){
+                                                         String token, @Value("${file.dir}") String dir) throws IOException {
         if(checkAccessToken(request, token, writer)){
-            return ResponseEntity.ok().body(boardService.registerArticleViewFiles(writer, regdate, files,dir));
+            return ResponseEntity.ok().body(boardService.registerArticleViewFiles(writer, regdate, files, dir));
         }
 
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping(value = "/article/reply/viewFiles")
+    public ResponseEntity<List<UploadFile>> insertReplyViewFiles(HttpServletRequest request, @RequestParam(value="replyer") String replyer,
+                                                                 @RequestParam(value = "regdate") String regdate,
+                                                                 @RequestParam(value = "files") List<MultipartFile> files,
+                                                                 String token, @Value("${file.dir}") String dir) throws IOException{
+        if(checkAccessToken(request,token, replyer)){
+            return ResponseEntity.ok().body(boardService.registerReplyViewFiles(replyer,regdate,files,dir));
+        }
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping(value = "/article/reComment/viewFiles")
+    public ResponseEntity<List<UploadFile>> insertReCommentViewFiles(HttpServletRequest request, @RequestParam(value="reCommenter") String reCommenter,
+                                                                 @RequestParam(value = "regdate") String regdate,
+                                                                 @RequestParam(value = "files") List<MultipartFile> files,
+                                                                 String token, @Value("${file.dir}") String dir) throws IOException{
+        if(checkAccessToken(request,token, reCommenter)){
+            return ResponseEntity.ok().body(boardService.registerReCommentViewFiles(reCommenter,regdate,files,dir));
+        }
         return ResponseEntity.ok().body(null);
     }
 

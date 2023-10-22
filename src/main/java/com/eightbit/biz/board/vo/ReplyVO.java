@@ -15,4 +15,9 @@ public class ReplyVO {
     private String updatedate;
     private String[] nomalfiles;
     private String[] sharefiles;
+
+    public ReplyVO(String replyer, String regdate){
+        this.replyer=replyer;
+        this.regdate=regdate;
+    }
 }

@@ -33,7 +33,9 @@ public interface BoardService {
     public List<String> registerReplyLike(ReplyLikeVO replyLikeVO);
     public List<String> registerReCommentLike(ReCommentLikeVO reCommentLikeVO);
     public void registerArticleShareFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException;
-    public String registerArticleViewFiles(String writer, String regdate, List<MultipartFile> files, String dir);
+    public List<UploadFile> registerArticleViewFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException;
+    public List<UploadFile> registerReplyViewFiles(String replyer, String regdate, List<MultipartFile> files, String dir) throws  IOException;
+    public List<UploadFile> registerReCommentViewFiles(String reCommenter, String regdate, List<MultipartFile> files, String dir) throws  IOException;
     public void modifyArticle(BoardVO boardVO);
     public void modifyReply(ReplyVO replyVO);
     public void modifyReComment(ReCommentVO reCommentVO);

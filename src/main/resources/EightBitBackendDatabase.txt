@@ -422,4 +422,4 @@ DELIMITER ;
 
 
 show triggers;
-drop trigger if exists autoCountDownLike;
+
