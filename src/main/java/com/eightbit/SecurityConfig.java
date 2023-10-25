@@ -1,7 +1,7 @@
 package com.eightbit;
 
-import com.eightbit.biz.user.util.JwtAuthenticationFilter;
-import com.eightbit.biz.user.util.JwtTokenProvider;
+import com.eightbit.util.token.JwtAuthenticationFilter;
+import com.eightbit.util.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Board/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Phone/*","/Email/*","/Board/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/Users/check/**","/Users/authkey/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/Users/user").permitAll()
                 .antMatchers(HttpMethod.POST, "/Board/article/**").authenticated()

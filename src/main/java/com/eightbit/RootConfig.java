@@ -15,11 +15,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @ComponentScan
@@ -31,6 +33,30 @@ public class RootConfig {
 
         @Autowired
         ApplicationContext applicationContext;
+
+        @Bean
+        public JavaMailSenderImpl getJavaMailSender() {
+            Properties properties = new Properties();
+            properties.put("mail.smtp.auth", true);
+            properties.put("mail.transport.protocol", "smtp");
+            properties.put("mail.smtp.starttls.enable", true);
+            properties.put("mail.smtp.starttls.required", true);
+            properties.put("mail.debug", true);
+            properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.put("mail.smtp.ssl.trust","smtp.gmail.com");
+            properties.put("mail.smtp.ssl.protocols","TLSv1.2");
+
+            JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+            mailSender.setHost("smtp.gmail.com");
+            mailSender.setPort(587);
+            mailSender.setUsername("theloopholesnk@gmail.com");
+            mailSender.setPassword("oszqidizrfjcuswr");
+            mailSender.setDefaultEncoding("utf-8");
+            mailSender.setJavaMailProperties(properties);
+
+            return mailSender;
+
+        }
 
 
 //        @Bean

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="EmailMyBatisDAO">
+
+    <select id="getTempList" resultType="temp">
+        select * from emailAuth
+    </select>
+
+
+    <select id="getAuthNum" resultType="string">
+        select authNum from emailAuth where email=#{email}
+    </select>
+
+
+    <insert id="insertTempUser">
+        insert into emailAuth(email, authNum) values(#{email}, #{authNum})
+    </insert>
+
+
+    <update id="updateTempAuthNum">
+        update emailAuth set authNum=#{authNum} where email=#{email}
+    </update>
+
+    <delete id="deleteTempRow">
+        delete from emailAuth where email=#{email}
+    </delete>
+
+</mapper>
