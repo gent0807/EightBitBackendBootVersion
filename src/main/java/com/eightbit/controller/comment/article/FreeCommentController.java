@@ -60,27 +60,6 @@ public class FreeCommentController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body("불허된 접근입니다!");
     }
 
-
-    @PatchMapping(value="/report/reply/abuse") //Comments/free/report/abuse
-    public void reportAbuseReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        articleService.modifyAbuseReply(comment);
-    }
-    @PatchMapping(value="/report/reply/19") //Comments/free/report/19
-    public void report19Reply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        articleService.modify19Reply(comment);
-    }
-    @PatchMapping(value="/report/reply/incoporate") //Comments/free/report/incoporate
-    public void reportIncopoateReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        articleService.modifyIncoporateReply(comment);
-    }
-
-
     @DeleteMapping(value="/article/reply/{replyer}/{regdate}/{role}") //Comments/free/comment
     public ResponseEntity<String> deleteReply(HttpServletRequest request, String token,
                                               @PathVariable("replyer") String replyer, @PathVariable("regdate") String regdate,
