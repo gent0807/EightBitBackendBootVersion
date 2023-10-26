@@ -227,6 +227,8 @@ create table `follow`(
 select * from `user`;
 select * from `phoneauth`;
 select * from `emailauth`;
+select * from `role`;
+select * from `report`;
 select * from `board`;
 select * from `freeReply`;
 select * from `freeReComment`;
@@ -473,6 +475,148 @@ DELIMITER $$
 	END $$
 DELIMITER ;
 
+DELIMITER $$
+	CREATE TRIGGER autoCountUpArticleReport
+	AFTER INSERT ON `freearticlereport`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+        DECLARE reportTemp VARCHAR(50);
+
+		SET writerTemp = NEW.writer;
+		SET regdateTemp = NEW.regdate;
+        SET reportTemp= NEW.report;
+
+        if reportTemp='abuse' then
+			update `board` set `abuse_report`= `abuse_report`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='lewd' then
+			update `board` set `19_report`=`19_report`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='incoporate' then
+			update `board` set `incoporate_report`=`incoporate_report`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
+		end if;
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownArticleReport
+	AFTER DELETE ON `freearticlereport`
+	FOR EACH ROW
+	BEGIN
+		DECLARE writerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+        DECLARE reportTemp VARCHAR(50);
+
+		SET writerTemp = OLD.writer;
+		SET regdateTemp = OLD.regdate;
+        SET reportTemp= OLD.report;
+
+        if reportTemp='abuse' then
+			update `board` set `abuse_report`= `abuse_report`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='lewd' then
+			update `board` set `19_reprot`=`19_report`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='incoporate' then
+			update `board` set `incoporate_reprot`=`incoporate_report`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
+		end if;
+	END $$
+DELIMITER ;
+
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpReplyReport
+	AFTER INSERT ON `freereplyreport`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+        DECLARE reportTemp VARCHAR(50);
+
+		SET replyerTemp = NEW.replyer;
+		SET regdateTemp = NEW.regdate;
+        SET reportTemp= NEW.report;
+
+        if reportTemp='abuse' then
+			update `freeReply` set `abuse_report`= `abuse_report`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='lewd' then
+			update `freeReply` set `19_report`=`19_report`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='incoporate' then
+			update `freeReply` set `incoporate_report`=`incoporate_report`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		end if;
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownReplyReport
+	AFTER DELETE ON `freereplyreport`
+	FOR EACH ROW
+	BEGIN
+		DECLARE replyerTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+        DECLARE reportTemp VARCHAR(50);
+
+		SET replyerTemp = OLD.replyer;
+		SET regdateTemp = OLD.regdate;
+        SET reportTemp= OLD.report;
+
+        if reportTemp='abuse' then
+			update `freeReply` set `abuse_report`= `abuse_report`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='lewd' then
+			update `freeReply` set `19_report`=`19_report`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		elseif reportTemp='incoporate' then
+			update `freeReply` set `incoporate_report`=`incoporate_report`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		end if;
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountUpReCommentReport
+	AFTER INSERT ON `freerecommentreport`
+	FOR EACH ROW
+	BEGIN
+		DECLARE reCommenterTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+        DECLARE reportTemp VARCHAR(50);
+
+		SET reCommenterTemp = NEW.reCommenter;
+		SET regdateTemp = NEW.regdate;
+        SET reportTemp= NEW.report;
+
+        if reportTemp='abuse' then
+			update `freeReComment` set `abuse_report`= `abuse_report`+1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+		elseif reportTemp='lewd' then
+			update `freeReComment` set `19_report`=`19_report`+1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+		elseif reportTemp='incoporate' then
+			update `freeReComment` set `incoporate_report`=`incoporate_report`+1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+		end if;
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+	CREATE TRIGGER autoCountDownReCommentReport
+	AFTER DELETE ON `freerecommentreport`
+	FOR EACH ROW
+	BEGIN
+		DECLARE reCommenterTemp VARCHAR(50);
+		DECLARE regdateTemp datetime;
+        DECLARE reportTemp VARCHAR(50);
+
+		SET reCommenterTemp = OLD.reCommenter;
+		SET regdateTemp = OLD.regdate;
+        SET reportTemp= OLD.report;
+
+        if reportTemp='abuse' then
+			update `freeReComment` set `abuse_report`= `abuse_report`-1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+		elseif reportTemp='lewd' then
+			update `freeReComment` set `19_report`=`19_report`-1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+		elseif reportTemp='incoporate' then
+			update `freeReComment` set `incoporate_report`=`incoporate_report`-1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+		end if;
+	END $$
+DELIMITER ;
+
 
 show triggers;
+
+drop trigger `autoCountUpReCommentReport`;
+
 
