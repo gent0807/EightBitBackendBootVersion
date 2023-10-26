@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FreeCommentReportMyBatisDAO">
+
+    <select id="getReportCount" resultType="_int">
+        select count(*) from freeReplyreport where reporter=#{reporter} and replyer=#{replyer}
+                                                  and regdate=#{regdate} and report=#{report}
+    </select>
+
+    <insert id="insertReport">
+        insert into freeReplyreport values(#{reporter},#{replyer},#{regdate},#{report})
+    </insert>
+
+    <delete id="deleteReport">
+        delete from freeReplyreport where reporter=#{reporter} and replyer=#{replyer}
+                                        and regdate=#{regdate} and report={report}
+    </delete>
+</mapper>

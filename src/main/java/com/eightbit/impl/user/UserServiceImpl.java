@@ -7,30 +7,24 @@ import com.eightbit.inter.user.UserService;
 import com.eightbit.persistence.user.UserRepository;
 import com.eightbit.util.token.JwtTokenProvider;
 import com.eightbit.util.token.TokenManager;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.eightbit.util.user.ProfileSaver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
 @Primary
 @PropertySource("classpath:auth.properties")
-//@MyUserServiceImpl
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -42,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final TokenManager tokenManager;
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final ProfileSaver profileSaver;
 
 
 
@@ -62,6 +58,14 @@ public class UserServiceImpl implements UserService {
             return tokenInfo;
         }
         return tokenInfo=null;
+    }
+
+    @Override
+    public String insertUser(User user) throws IOException {
+        if(profileSaver.saveProfile(user)){
+            return userRepository.insertUser(user);
+        }
+        return "NO";
     }
 
     @Override
@@ -140,10 +144,7 @@ public class UserServiceImpl implements UserService {
         return tokenInfo;
     }
 
-    @Override
-    public String getAccessToken(String writer) {
-        return userRepository.getAccessToken(writer);
-    }
+
 
 
 

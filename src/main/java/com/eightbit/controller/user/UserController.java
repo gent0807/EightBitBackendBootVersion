@@ -78,7 +78,7 @@ public class UserController {
 
     @PostMapping(value = "/user")
     public ResponseEntity<String> insertUser(@RequestBody User user) throws IOException {
-        return ResponseEntity.ok().body(userRepository.insertUser(user));
+        return ResponseEntity.ok().body(userService.insertUser(user));
     }
 
     @PostMapping(value = "/check/login")

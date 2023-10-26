@@ -1,6 +1,5 @@
 package com.eightbit.controller.article;
 
-
 import com.eightbit.entity.article.Article;
 import com.eightbit.entity.comment.Comment;
 import com.eightbit.entity.like.ArticleLike;
@@ -10,7 +9,6 @@ import com.eightbit.entity.recomment.ReComment;
 import com.eightbit.entity.uploadfile.UploadFile;
 import com.eightbit.entity.view.ArticleView;
 import com.eightbit.inter.article.ArticleService;
-import com.eightbit.inter.user.UserService;
 import com.eightbit.util.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -38,7 +35,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/Board/*")
+@RequestMapping("/Board/*") //Articles/free/*
 @RequiredArgsConstructor
 @Slf4j
 @Primary
@@ -47,8 +44,6 @@ public class FreeArticleController {
 
     private final ArticleService articleService;
 
-    private final UserService userService;
-
     private final TokenManager tokenManager;
 
     @GetMapping(value = "/articles")
@@ -56,24 +51,6 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(articleService.getList());
     }
 
-    @GetMapping(value="/user/articles")
-    public ResponseEntity<List<Article>> getUserArticles(@RequestParam String writer){
-        return ResponseEntity.ok().body(articleService.getUserArticles(writer));
-    }
-
-    @GetMapping(value="/article/replies")
-    public ResponseEntity<List<Comment>> getReplies(@RequestParam String original_writer, @RequestParam String original_regdate, Comment comment) {
-        comment.setOriginal_writer(original_writer);
-        comment.setOriginal_regdate(original_regdate);
-        return ResponseEntity.ok().body(articleService.getReplies(comment));
-    }
-
-    @GetMapping(value="/article/reply/reComments")
-    public ResponseEntity<List<ReComment>> getReComments(@RequestParam String original_replyer, @RequestParam String original_regdate, ReComment reComment){
-        reComment.setOriginal_replyer(original_replyer);
-        reComment.setOriginal_regdate(original_regdate);
-        return ResponseEntity.ok().body(articleService.getReComments(reComment));
-    }
 
     @GetMapping(value="/article")
     public ResponseEntity<Article> getArticle(@RequestParam String writer, @RequestParam String regdate, Article article){
@@ -82,14 +59,48 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(articleService.getArticle(article));
     }
 
-    @GetMapping(value="/article/attaches/{writer}/{regdate}")
+    @GetMapping(value="/user/articles")
+    public ResponseEntity<List<Article>> getUserArticles(@RequestParam String writer){
+        return ResponseEntity.ok().body(articleService.getUserArticles(writer));
+    }
+
+    @GetMapping(value="/article/replies") //Comments/free/comments
+    public ResponseEntity<List<Comment>> getReplies(@RequestParam String original_writer, @RequestParam String original_regdate, Comment comment) {
+        comment.setOriginal_writer(original_writer);
+        comment.setOriginal_regdate(original_regdate);
+        return ResponseEntity.ok().body(articleService.getReplies(comment));
+    }
+
+    @GetMapping(value = "/article/reply") //Comments/free/comment
+    public ResponseEntity<Comment> getReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
+        comment.setReplyer(replyer);
+        comment.setRegdate(regdate);
+        return ResponseEntity.ok().body(articleService.getReply(comment));
+    }
+
+
+    @GetMapping(value="/article/reply/reComments") //ReComments/free/reComments
+    public ResponseEntity<List<ReComment>> getReComments(@RequestParam String original_replyer, @RequestParam String original_regdate, ReComment reComment){
+        reComment.setOriginal_replyer(original_replyer);
+        reComment.setOriginal_regdate(original_regdate);
+        return ResponseEntity.ok().body(articleService.getReComments(reComment));
+    }
+
+    @GetMapping(value = "/article/reply/reComment") //ReComments/free/reComment
+    public ResponseEntity<ReComment> getReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
+        reComment.setReCommenter(reCommenter);
+        reComment.setRegdate(regdate);
+        return ResponseEntity.ok().body(articleService.getReComment(reComment));
+    }
+
+    @GetMapping(value="/article/attaches/{writer}/{regdate}") //Files/attach/article/free/attatches
     public ResponseEntity<List<UploadFile>> getAttachList(@PathVariable String writer, @PathVariable String regdate, UploadFile uploadFile){
         uploadFile.setUploader(writer);
         uploadFile.setRegdate(regdate);
         return  ResponseEntity.ok().body(articleService.getAttachList(uploadFile));
     }
 
-    @GetMapping(value = "/article/attach/{id}/{uploader}/{regdate}")
+    @GetMapping(value = "/article/attach/{id}/{uploader}/{regdate}")  //Files/attach/article/free/attatch
     public ResponseEntity<Resource> downloadAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
                                                        @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
         uploadFile.setUploader(uploader);
@@ -110,7 +121,7 @@ public class FreeArticleController {
                 .body(resource);
     }
 
-    @GetMapping("/article/view/{id}/{uploader}/{regdate}")
+    @GetMapping("/article/view/{id}/{uploader}/{regdate}") //Files/view/article/free/view
     public Resource downloadViewFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
                                      @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
         uploadFile.setUploader(uploader);
@@ -124,35 +135,21 @@ public class FreeArticleController {
         return new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/viewfiles/"+storeFilename);
     }
 
-    @GetMapping(value = "article/reply")
-    public ResponseEntity<Comment> getReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        return ResponseEntity.ok().body(articleService.getReply(comment));
-    }
-
-    @GetMapping(value = "article/reply/reComment")
-    public ResponseEntity<ReComment> getReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
-        reComment.setReCommenter(reCommenter);
-        reComment.setRegdate(regdate);
-        return ResponseEntity.ok().body(articleService.getReComment(reComment));
-    }
-
-    @GetMapping(value = "/article/likers")
+    @GetMapping(value = "/article/likers") //Likes/article/free/likes
     public ResponseEntity<List<String>> getArticleLikers(@RequestParam String writer, @RequestParam String regdate, Article article){
         article.setWriter(writer);
         article.setRegdate(regdate);
         return ResponseEntity.ok().body(articleService.getArticleLikers(article));
     }
 
-    @GetMapping(value = "/article/reply/likers")
+    @GetMapping(value = "/article/reply/likers") //Likes/comment/free/likes
     public ResponseEntity<List<String>> getReplyLikers(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
         comment.setReplyer(replyer);
         comment.setRegdate(regdate);
         return ResponseEntity.ok().body(articleService.getReplyLikers(comment));
     }
 
-    @GetMapping(value = "/article/reply/reComment/likers")
+    @GetMapping(value = "/article/reply/reComment/likers") //Likes/reComment/free/likes
     public ResponseEntity<List<String>> getReCommentLikers(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
         reComment.setReCommenter(reCommenter);
         reComment.setRegdate(regdate);
@@ -177,7 +174,7 @@ public class FreeArticleController {
     }
 
 
-    @PostMapping(value = "/article/shareFiles")
+    @PostMapping(value = "/article/shareFiles") //Files/attach/article/free/files
     public void insertArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
                                         @RequestParam(value="regdate") String regdate,
                                         @RequestParam(value="files") List<MultipartFile> files,
@@ -189,7 +186,7 @@ public class FreeArticleController {
         }
     }
 
-    @PostMapping(value="/article/viewFiles")
+    @PostMapping(value="/article/viewFiles") //Files/view/article/free/files
     public ResponseEntity<List<UploadFile>> insertArticleViewFiles(HttpServletRequest request, @RequestParam(value="writer") String writer,
                                                          @RequestParam(value = "regdate") String regdate,
                                                          @RequestParam(value ="files") List<MultipartFile> files,
@@ -201,7 +198,7 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping(value = "/article/reply/viewFiles")
+    @PostMapping(value = "/article/reply/viewFiles") //Files/view/comment/free/files
     public ResponseEntity<List<UploadFile>> insertReplyViewFiles(HttpServletRequest request, @RequestParam(value="replyer") String replyer,
                                                                  @RequestParam(value = "regdate") String regdate,
                                                                  @RequestParam(value = "files") List<MultipartFile> files,
@@ -212,7 +209,7 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping(value = "/article/reComment/viewFiles")
+    @PostMapping(value = "/article/reComment/viewFiles") //Files/view/reComment/free/files
     public ResponseEntity<List<UploadFile>> insertReCommentViewFiles(HttpServletRequest request, @RequestParam(value="reCommenter") String reCommenter,
                                                                  @RequestParam(value = "regdate") String regdate,
                                                                  @RequestParam(value = "files") List<MultipartFile> files,
@@ -223,7 +220,7 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping(value="/article/reply")
+    @PostMapping(value="/article/reply") //Comments/free/comment
     public ResponseEntity<Comment> insertReply(HttpServletRequest request, String token, @RequestBody Comment comment){
         if(tokenManager.checkAccessToken(request, token, comment.getReplyer())){
             return ResponseEntity.ok().body(articleService.registerReply(comment));
@@ -231,7 +228,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
 
-    @PostMapping(value="/article/reply/reComment")
+    @PostMapping(value="/article/reply/reComment") //ReComments/free/reComment
     public ResponseEntity<ReComment> insertReComment(HttpServletRequest request, String token, @RequestBody ReComment reComment){
         if(tokenManager.checkAccessToken(request, token, reComment.getReCommenter())){
             return ResponseEntity.ok().body(articleService.registerReComment(reComment));
@@ -240,14 +237,14 @@ public class FreeArticleController {
     }
 
 
-    @PostMapping(value = "/article/view")
+    @PostMapping(value = "/article/view") //Views/article/free/view
     public void insertArticleView(HttpServletRequest request, String token, @RequestBody ArticleView articleView){
         if(tokenManager.checkAccessToken(request,token, articleView.getViewer())) {
             articleService.registerArticleView(articleView);
         }
     }
 
-    @PostMapping(value = "/article/like")
+    @PostMapping(value = "/article/like") //Likes/article/free/like
     public ResponseEntity<List<String>> insertArticleLike(HttpServletRequest request, String token, @RequestBody ArticleLike articleLike){
         if(tokenManager.checkAccessToken(request, token, articleLike.getLiker())){
             return ResponseEntity.ok().body(articleService.registerArticleLike(articleLike));
@@ -255,7 +252,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
 
-    @PostMapping(value = "/article/reply/like")
+    @PostMapping(value = "/article/reply/like") //Likes/comment/free/like
     public ResponseEntity<List<String>> insertReplyLike(HttpServletRequest request, String token, @RequestBody CommentLike commentLike){
         if(tokenManager.checkAccessToken(request, token, commentLike.getLiker())){
             return ResponseEntity.ok().body(articleService.registerReplyLike(commentLike));
@@ -263,7 +260,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
 
-    @PostMapping(value = "article/reply/reComment/like")
+    @PostMapping(value = "article/reply/reComment/like") //Like/reComment/free/like
     public ResponseEntity<List<String>> insertReCommentLike(HttpServletRequest request, String token, @RequestBody ReCommentLike reCommentLike){
         if(tokenManager.checkAccessToken(request, token, reCommentLike.getLiker())){
             return ResponseEntity.ok().body(articleService.registerReCommentLike(reCommentLike));
@@ -280,7 +277,7 @@ public class FreeArticleController {
         }
     }
 
-    @PatchMapping(value="/article/reply")
+    @PatchMapping(value="/article/reply") //Comments/free/comment
     public ResponseEntity<String> updateReply(HttpServletRequest request, String token,
                                               @RequestParam String replyer, @RequestParam String regdate, @RequestBody Comment comment){
 
@@ -294,7 +291,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body("불허된 접근입니다!");
     }
 
-    @PatchMapping(value="/article/reply/reComment")
+    @PatchMapping(value="/article/reply/reComment") //ReComments/free/reComment
     public ResponseEntity<String> updateReComment(HttpServletRequest request, String token,
                                                   @RequestParam String reCommenter, @RequestParam String regdate, @RequestBody ReComment reComment){
         if(tokenManager.checkAccessToken(request, token,reCommenter)){
@@ -329,33 +326,33 @@ public class FreeArticleController {
         articleService.modifyIncoporateArticle(article);
     }
 
-    @PatchMapping(value="/report/reply/abuse")
+    @PatchMapping(value="/report/reply/abuse") //Comments/free/report/abuse
     public void reportAbuseReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
         comment.setReplyer(replyer);
         comment.setRegdate(regdate);
         articleService.modifyAbuseReply(comment);
     }
-    @PatchMapping(value="/report/reply/19")
+    @PatchMapping(value="/report/reply/19") //Comments/free/report/19
     public void report19Reply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
         comment.setReplyer(replyer);
         comment.setRegdate(regdate);
         articleService.modify19Reply(comment);
     }
-    @PatchMapping(value="/report/reply/incoporate")
+    @PatchMapping(value="/report/reply/incoporate") //Comments/free/report/incoporate
     public void reportIncopoateReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
         comment.setReplyer(replyer);
         comment.setRegdate(regdate);
         articleService.modifyIncoporateReply(comment);
     }
 
-    @PatchMapping(value="/report/reComment/abuse")
+    @PatchMapping(value="/report/reComment/abuse") //ReComments/free/report/abuse
     public void reportAbuseReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
         reComment.setReCommenter(reCommenter);
         reComment.setRegdate(regdate);
         articleService.modifyAbuseReComment(reComment);
     }
 
-    @PatchMapping(value="/report/reComment/19")
+    @PatchMapping(value="/report/reComment/19") //ReCommetns/free/report/19
     public void report19ReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
         reComment.setReCommenter(reCommenter);
         reComment.setRegdate(regdate);
@@ -363,7 +360,7 @@ public class FreeArticleController {
     }
 
 
-    @PatchMapping(value="/report/reComment/incoporate")
+    @PatchMapping(value="/report/reComment/incoporate") //ReComments/free/report/incoporate
     public void reportIncoporateReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
         reComment.setReCommenter(reCommenter);
         reComment.setRegdate(regdate);
@@ -393,7 +390,7 @@ public class FreeArticleController {
 //        }
 //    }
 
-    @DeleteMapping(value="/article/shareFiles")
+    @DeleteMapping(value="/article/shareFiles") //Files/attach/article/free/files
     public void deleteArticleShareFile(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
         if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
 
@@ -403,7 +400,7 @@ public class FreeArticleController {
         }
     }
 
-    @DeleteMapping(value="/article/reply/{replyer}/{regdate}/{role}")
+    @DeleteMapping(value="/article/reply/{replyer}/{regdate}/{role}") //Comments/free/comment
     public ResponseEntity<String> deleteReply(HttpServletRequest request, String token,
                                               @PathVariable("replyer") String replyer, @PathVariable("regdate") String regdate,
                                               @PathVariable("role") String role, Comment comment) {
@@ -417,7 +414,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body("불허된 접근입니다!");
     }
 
-    @DeleteMapping(value="/article/reply/reComment/{reCommenter}/{regdate}/{role}")
+    @DeleteMapping(value="/article/reply/reComment/{reCommenter}/{regdate}/{role}") //ReComments/article/free/reComment
     public ResponseEntity<String> deleteReComment(HttpServletRequest request, String token,
                                                   @PathVariable("reCommenter") String reCommenter,@PathVariable("regdate") String regdate, @PathVariable("role") String role, ReComment reComment){
 
@@ -432,7 +429,7 @@ public class FreeArticleController {
 
     }
 
-    @DeleteMapping(value = "/article/like/{liker}/{writer}/{regdate}")
+    @DeleteMapping(value = "/article/like/{liker}/{writer}/{regdate}") //Likes/article/free/like
     public ResponseEntity<List<String>> deleteArticleLike(HttpServletRequest request, String token, @PathVariable String liker,
                                                           @PathVariable String writer, @PathVariable String regdate, ArticleLike articleLike){
         if(tokenManager.checkAccessToken(request, token, liker)){
@@ -444,7 +441,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
 
-    @DeleteMapping(value = "/article/reply/like/{liker}/{replyer}/{regdate}")
+    @DeleteMapping(value = "/article/reply/like/{liker}/{replyer}/{regdate}") //Likes/comment/free/like
     public ResponseEntity<List<String>> deleteReplyLike(HttpServletRequest request, String token, @PathVariable String liker,
                                                           @PathVariable String replyer, @PathVariable String regdate, CommentLike commentLike){
         if(tokenManager.checkAccessToken(request, token, liker)){
@@ -456,7 +453,7 @@ public class FreeArticleController {
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
 
-    @DeleteMapping(value = "/article/reply/reComment/like/{liker}/{reCommenter}/{regdate}")
+    @DeleteMapping(value = "/article/reply/reComment/like/{liker}/{reCommenter}/{regdate}") //Likes/reComment/free/like
     public ResponseEntity<List<String>> deleteReCommentLike(HttpServletRequest request, String token, @PathVariable String liker,
                                                         @PathVariable String reCommenter, @PathVariable String regdate, ReCommentLike reCommentLike){
         if(tokenManager.checkAccessToken(request, token, liker)){
