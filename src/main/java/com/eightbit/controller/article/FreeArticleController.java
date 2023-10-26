@@ -305,68 +305,6 @@ public class FreeArticleController {
     }
 
 
-    @PatchMapping(value="/report/article/abuse")
-    public void reportAbuseArticle(@RequestParam String writer, @RequestParam String regdate, Article article){
-        article.setWriter(writer);
-        article.setRegdate(regdate);
-        articleService.modifyAbuseArticle(article);
-    }
-
-    @PatchMapping(value = "/report/article/19")
-    public void report19Article(@RequestParam String writer, @RequestParam String regdate, Article article){
-        article.setWriter(writer);
-        article.setRegdate(regdate);
-        articleService.modify19Article(article);
-    }
-
-    @PatchMapping(value="/report/article/incoporate")
-    public void reportIncoporateArticle(@RequestParam String writer, @RequestParam String regdate, Article article){
-        article.setWriter(writer);
-        article.setRegdate(regdate);
-        articleService.modifyIncoporateArticle(article);
-    }
-
-    @PatchMapping(value="/report/reply/abuse") //Comments/free/report/abuse
-    public void reportAbuseReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        articleService.modifyAbuseReply(comment);
-    }
-    @PatchMapping(value="/report/reply/19") //Comments/free/report/19
-    public void report19Reply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        articleService.modify19Reply(comment);
-    }
-    @PatchMapping(value="/report/reply/incoporate") //Comments/free/report/incoporate
-    public void reportIncopoateReply(@RequestParam String replyer, @RequestParam String regdate, Comment comment){
-        comment.setReplyer(replyer);
-        comment.setRegdate(regdate);
-        articleService.modifyIncoporateReply(comment);
-    }
-
-    @PatchMapping(value="/report/reComment/abuse") //ReComments/free/report/abuse
-    public void reportAbuseReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
-        reComment.setReCommenter(reCommenter);
-        reComment.setRegdate(regdate);
-        articleService.modifyAbuseReComment(reComment);
-    }
-
-    @PatchMapping(value="/report/reComment/19") //ReCommetns/free/report/19
-    public void report19ReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
-        reComment.setReCommenter(reCommenter);
-        reComment.setRegdate(regdate);
-        articleService.modify19ReComment(reComment);
-    }
-
-
-    @PatchMapping(value="/report/reComment/incoporate") //ReComments/free/report/incoporate
-    public void reportIncoporateReComment(@RequestParam String reCommenter, @RequestParam String regdate, ReComment reComment){
-        reComment.setReCommenter(reCommenter);
-        reComment.setRegdate(regdate);
-        articleService.modifyIncoporateReComment(reComment);
-    }
-
     @DeleteMapping(value = "/article/{writer}/{regdate}/{role}")
     public void deleteArticle(HttpServletRequest request, String token,
                               @PathVariable("writer") String writer, @PathVariable("regdate") String regdate,

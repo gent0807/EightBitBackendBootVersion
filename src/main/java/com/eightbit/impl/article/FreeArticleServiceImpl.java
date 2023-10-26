@@ -289,50 +289,6 @@ public class FreeArticleServiceImpl implements ArticleService {
         freeArticleRepository.modifyReComment(reComment);
     }
 
-    @Override
-    public void modifyAbuseArticle(Article article) {
-        freeArticleRepository.modifyAbuseArticle(article);
-    }
-
-    @Override
-    public void modify19Article(Article article) {
-        freeArticleRepository.modify19Article(article);
-    }
-
-    @Override
-    public void modifyIncoporateArticle(Article article) {
-        freeArticleRepository.modifyIncoporateArticle(article);
-    }
-
-    @Override
-    public void modifyAbuseReply(Comment comment) {
-        freeArticleRepository.modifyAbuseReply(comment);
-    }
-
-    @Override
-    public void modify19Reply(Comment comment) {
-        freeArticleRepository.modify19Reply(comment);
-    }
-
-    @Override
-    public void modifyIncoporateReply(Comment comment) {
-        freeArticleRepository.modifyIncoporateReply(comment);
-    }
-
-    @Override
-    public void modifyAbuseReComment(ReComment reComment) {
-        freeArticleRepository.modifyAbuseReComment(reComment);
-    }
-
-    @Override
-    public void modify19ReComment(ReComment reComment) {
-        freeArticleRepository.modify19ReComment(reComment);
-    }
-
-    @Override
-    public void modifyIncoporateReComment(ReComment reComment) {
-        freeArticleRepository.modifyIncoporateReComment(reComment);
-    }
 
     @Override
     public void removeArticle(Article article) {

@@ -42,15 +42,7 @@ public interface ArticleService {
     public void modifyArticle(Article article);
     public void modifyReply(Comment comment);
     public void modifyReComment(ReComment reComment);
-    public void modifyAbuseArticle(Article article);
-    public void modify19Article(Article article);
-    public void modifyIncoporateArticle(Article article);
-    public void modifyAbuseReply(Comment comment);
-    public void modify19Reply(Comment comment);
-    public void modifyIncoporateReply(Comment comment);
-    public void modifyAbuseReComment(ReComment reComment);
-    public void modify19ReComment(ReComment reComment);
-    public void modifyIncoporateReComment(ReComment reComment);
+
     public void removeArticle(Article article);
     public void removeArticleShareFile(UploadFile uploadFile);
     public void removeReply(Comment comment);
