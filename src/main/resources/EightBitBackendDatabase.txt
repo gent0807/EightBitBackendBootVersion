@@ -1,5 +1,24 @@
 use `eightbitdb`;
 
+
+create table `phoneAuth`(
+	phoneNum varchar(200) not null primary key,
+    authNum varchar(200) not null
+);
+
+create table `emailAuth`(
+	email varchar(200) not null primary key,
+    authNum varchar(2000) not null
+);
+
+create table `role` (
+	role varchar(20) not null primary key
+);
+
+create table `report`(
+	report varchar(20) not null primary key
+);
+
 create table `user`(
 	email varchar(200) not null,
     password varchar(200) not null,
@@ -10,7 +29,9 @@ create table `user`(
     accesstoken varchar(300),
     refreshtoken varchar(300),
     primary key (email),
-    unique key (nickname)
+    unique key (nickname),
+    foreign key (role) references role(role)
+    on update cascade on delete cascade
 );
 
 create table `board`(
@@ -113,6 +134,36 @@ create table `freeReCommentLike`(
     foreign key(reCommenter, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade
 );
 
+create table `freeArticleReport`(
+    reporter varchar(50) not null,
+    writer varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    report varchar(20) not null,
+    foreign key(reporter) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(writer, regdate) references `board`(writer, regdate) on update cascade on delete cascade,
+    foreign key(report) references `report`(report) on update cascade on delete cascade
+);
+
+create table `freeReplyReport`(
+    reporter varchar(50) not null,
+    replyer varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    report varchar(20) not null,
+    foreign key(reporter) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(replyer, regdate) references `freeReply`(replyer, regdate) on update cascade on delete cascade,
+    foreign key(report) references `report`(report) on update cascade on delete cascade
+);
+
+create table `freeReCommentReport`(
+    reporter varchar(50) not null,
+    reCommenter varchar(50) not null,
+    regdate datetime not null default current_timestamp,
+    report varchar(20) not null,
+    foreign key(reporter) references `user`(nickname) on update cascade on delete cascade,
+    foreign key(reCommenter, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade,
+    foreign key(report) references `report`(report) on update cascade on delete cascade
+);
+
 create table `freeArticleFileShare`(
 	id int not null primary key auto_increment,
 	uploader varchar(50) not null,
@@ -174,6 +225,8 @@ create table `follow`(
 
 
 select * from `user`;
+select * from `phoneauth`;
+select * from `emailauth`;
 select * from `board`;
 select * from `freeReply`;
 select * from `freeReComment`;
