@@ -1,8 +1,6 @@
 package com.eightbit.persistence.report.comment.article;
 
-import com.eightbit.controller.file.attach.game.IndieGameAttachController;
-import com.eightbit.entity.report.ArticleReport;
-import com.eightbit.entity.report.CommentReport;
+import com.eightbit.entity.report.Report;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,15 +10,17 @@ import org.springframework.stereotype.Repository;
 public class FreeCommentReportRepository {
     private final SqlSessionTemplate mybatis;
 
-    public Integer getReportCount(CommentReport report){
+    public Integer getReportCount(Report report){
         return mybatis.selectOne("FreeCommentReportMyBatisDAO.getReportCount", report);
     }
 
-    public void insertReport(CommentReport report){
+
+    public void insertReport(Report report){
         mybatis.insert("FreeCommentReportMyBatisDAO.insertReport", report);
     }
 
-    public void deleteReport(CommentReport report){
+
+    public void deleteReport(Report report){
         mybatis.delete("FreeCommentReportMyBatisDAO.deleteReport", report);
     }
 }

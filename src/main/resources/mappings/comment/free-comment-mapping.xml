@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FreeCommentMyBatisDAO">
+    <select id="getArticleReplies" resultType="comment">
+        select a.* from (select row_number() over(order by b.seq) AS id, b.* from (select * from freeReply where original_author=#{original_author} and original_regdate=#{original_regdate} order by seq) b) a
+    </select>
+
+    <insert id="insertReply">
+        insert into freeReply(original_author, original_regdate, author, content) values (#{original_author}, #{original_regdate}, #{author}, #{content})
+    </insert>
+
+    <select id="getReplyRegdateAndUpdatedate" resultType="comment">
+        select regdate, updatedate from freeReply where seq=#{seq}
+    </select>
+
+    <select id="getSeqOfReply" resultType="_int">
+        select max(a.seq) as seq from (select seq from freeReply where author=#{author}) as a;
+    </select>
+
+    <update id="updateReply">
+        update freeReply set content=#{content}, updatedate=now() where author=#{author} and regdate=#{regdate}
+    </update>
+
+    <delete id="deleteReply">
+        delete from freeReply where author=#{author} and regdate=#{regdate}
+    </delete>
+
+</mapper>

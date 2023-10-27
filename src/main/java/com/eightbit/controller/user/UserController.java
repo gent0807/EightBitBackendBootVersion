@@ -1,6 +1,6 @@
 package com.eightbit.controller.user;
 
-import com.eightbit.entity.point.Point;
+
 import com.eightbit.entity.user.TokenInfo;
 import com.eightbit.entity.user.User;
 import com.eightbit.inter.user.UserService;
@@ -125,12 +125,6 @@ public class UserController {
 
     }
 
-    @PatchMapping(value = "/point/up")
-    public ResponseEntity<Point> pointUp(@RequestParam String writer, @RequestParam("point") int plus, Point point){
-        point.setNickname(writer);
-        point.setPoint(plus);
-        return ResponseEntity.ok().body(userRepository.updatePoint(point));
-    }
 
     @DeleteMapping(value = "/{nickname}/{role}")
     public void deleteUser(HttpServletRequest request, String token, @PathVariable String role, @PathVariable String nickname){

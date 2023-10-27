@@ -1,6 +1,6 @@
 package com.eightbit.persistence.user;
 
-import com.eightbit.entity.point.Point;
+
 import com.eightbit.entity.user.LoginResult;
 import com.eightbit.entity.user.TokenInfo;
 import com.eightbit.entity.user.User;
@@ -134,11 +134,6 @@ public class UserRepository {
 
     public void updateToken(TokenInfo tokenInfo){
         mybatis.update("UserMyBatisDAO.updateToken", tokenInfo);
-    }
-
-    public Point updatePoint(Point point){
-        mybatis.update("UserMyBatisDAO.updatePoint", point);
-        return mybatis.selectOne("UserMyBatisDAO.getPoint", point.getNickname());
     }
 
 

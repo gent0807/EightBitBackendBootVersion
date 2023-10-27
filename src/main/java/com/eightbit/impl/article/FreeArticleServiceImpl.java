@@ -2,10 +2,6 @@ package com.eightbit.impl.article;
 
 import com.eightbit.entity.article.Article;
 import com.eightbit.entity.comment.Comment;
-import com.eightbit.entity.like.ArticleLike;
-import com.eightbit.entity.like.ReCommentLike;
-import com.eightbit.entity.like.CommentLike;
-import com.eightbit.entity.recomment.ReComment;
 import com.eightbit.entity.uploadfile.UploadFile;
 import com.eightbit.entity.view.ArticleView;
 import com.eightbit.inter.article.ArticleService;
@@ -43,20 +39,6 @@ public class FreeArticleServiceImpl implements ArticleService {
         return freeArticleRepository.getUserArticles(writer);
     }
 
-    @Override
-    public List<Comment> getReplies(Comment comment){
-        return freeArticleRepository.getReplies(comment);
-    }
-
-    @Override
-    public List<ReComment> getReComments(ReComment reComment){
-        return freeArticleRepository.getReComments(reComment);
-    }
-
-    @Override
-    public Article getArticle(Article article) {
-        return freeArticleRepository.getArticle(article);
-    }
 
     @Override
     public List<UploadFile> getAttachList(UploadFile uploadFile) {
@@ -71,36 +53,6 @@ public class FreeArticleServiceImpl implements ArticleService {
     @Override
     public UploadFile getViewFile(UploadFile uploadFile) {
         return freeArticleRepository.getViewFile(uploadFile);
-    }
-
-    @Override
-    public Comment getReply(Comment comment) {
-        return freeArticleRepository.getReply(comment);
-    }
-
-    @Override
-    public ReComment getReComment(ReComment reComment) {
-        return freeArticleRepository.getReComment(reComment);
-    }
-
-    @Override
-    public List<String> getArticleLikers(Article article) {
-        return freeArticleRepository.getArticleLikers(article);
-    }
-
-    @Override
-    public List<String> getReplyLikers(Comment comment) {
-        return freeArticleRepository.getReplyLikers(comment);
-    }
-
-    @Override
-    public List<String> getReCommentLikers(ReComment reComment) {
-        return freeArticleRepository.getReCommentLikers(reComment);
-    }
-
-    @Override
-    public Integer getReCommentCount(Article article) {
-        return freeArticleRepository.getReCommentCount(article);
     }
 
 
@@ -165,8 +117,8 @@ public class FreeArticleServiceImpl implements ArticleService {
     }
 
     public String setViewReCommentFilePath(String reCommenter, String regdate, String dir){
-        Comment comment = freeArticleRepository.getOriginReplyerAndRegdate(new ReComment(reCommenter, regdate));
-        String origin_replyer= comment.getReplyer();
+        Comment comment = freeArticleRepository.getOriginReplyerAndRegdate(new Comment(reCommenter, regdate));
+        String origin_replyer= comment.getAuthor();
         String origin_reply_regdate= comment.getRegdate();
 
         Article article = freeArticleRepository.getOriginWriterAndRegdate(new Comment(origin_replyer,origin_reply_regdate));
@@ -247,46 +199,12 @@ public class FreeArticleServiceImpl implements ArticleService {
         return originFilename.substring(pos+1);
     }
 
-    @Override
-    public Comment registerReply(Comment comment){
-        return  freeArticleRepository.registerReply(comment);
-    }
-    @Override
-    public ReComment registerReComment(ReComment reComment) {
-        return freeArticleRepository.registerReComment(reComment);
-    }
 
-    @Override
-    public void registerArticleView(ArticleView articleView) {
-        freeArticleRepository.registerArticleView(articleView);
-    }
 
-    @Override
-    public List<String> registerArticleLike(ArticleLike articleLike) {
-        return freeArticleRepository.registerArticleLike(articleLike);
-    }
-
-    @Override
-    public List<String> registerReplyLike(CommentLike commentLike) {
-        return freeArticleRepository.registerReplyLike(commentLike);
-    }
-
-    @Override
-    public List<String> registerReCommentLike(ReCommentLike reCommentLike) {
-        return freeArticleRepository.registerReCommentLike(reCommentLike);
-    }
 
     @Override
     public void modifyArticle(Article article) {
         freeArticleRepository.modifyArticle(article);
-    }
-    @Override
-    public void modifyReply(Comment comment) {
-        freeArticleRepository.modifyReply(comment);
-    }
-    @Override
-    public void modifyReComment(ReComment reComment) {
-        freeArticleRepository.modifyReComment(reComment);
     }
 
 
@@ -343,28 +261,7 @@ public class FreeArticleServiceImpl implements ArticleService {
         }
     }
 
-    @Override
-    public void removeReply(Comment comment) {
-        freeArticleRepository.removeReply(comment);
-    }
-    @Override
-    public void removeReComment(ReComment reComment) {
-        freeArticleRepository.removeReComment(reComment);
-    }
 
-    @Override
-    public List<String> removeArticleLike(ArticleLike articleLike) {
-        return freeArticleRepository.removeArticleLike(articleLike);
-    }
 
-    @Override
-    public List<String> removeReplyLike(CommentLike commentLike) {
-        return freeArticleRepository.removeReplyLike(commentLike);
-    }
-
-    @Override
-    public List<String> removeReCommentLike(ReCommentLike reCommentLike) {
-        return freeArticleRepository.removeReCommentLike(reCommentLike);
-    }
 }
 

@@ -5,14 +5,11 @@
 <configuration>
     <!-- Alias 설정 -->
     <typeAliases>
-        <typeAlias alias="board" type="com.eightbit.entity.article.Article" />
+        <typeAlias alias="article" type="com.eightbit.entity.article.Article" />
         <typeAlias alias="user"  type="com.eightbit.entity.user.User" />
         <typeAlias alias="temp" type="com.eightbit.entity.email.Temp"/>
         <typeAlias alias="phone" type="com.eightbit.entity.phone.Phone"/>
-        <typeAlias alias="point" type="com.eightbit.entity.point.Point"/>
-        <typeAlias alias="reply" type="com.eightbit.entity.comment.Comment"/>
-        <typeAlias alias="reComment" type="com.eightbit.entity.recomment.ReComment"/>
-        <typeAlias alias="articleView" type="com.eightbit.entity.view.ArticleView"/>
+        <typeAlias alias="comment" type="com.eightbit.entity.comment.Comment"/>
         <typeAlias alias="uploadFile" type="com.eightbit.entity.uploadfile.UploadFile"/>
     </typeAliases>
 

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,16 +45,19 @@ public class PhoneRepository {
         return alreadyPhoneRegister;
     }
 
+    @Transactional
     public String insertTempPhone(Phone phone){
         mybatis.insert("PhoneMyBatisDAO.insertPhone", phone);
         return "OK";
     }
 
+    @Transactional
     public String updateTempPhone(Phone phone){
         mybatis.update("PhoneMyBatisDAO.updatePhone", phone);
         return "OK";
     }
 
+    @Transactional
     public String deletePhoneNum(String phoneNum){
         List<Phone> phoneList =mybatis.selectList("PhoneMyBatisDAO.getPhoneList");
         for(Phone phone: phoneList){

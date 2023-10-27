@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,13 +32,15 @@ public class EmailRepository {
     }
 
 
+
+    @Transactional
     public String insertTempUser(Temp temp){
         mybatis.insert("EmailMyBatisDAO.insertTempUser", temp);
         return "OK";
     }
 
 
-
+    @Transactional
     public String updateTempAuthNum(Temp temp){
         mybatis.update("EmailMyBatisDAO.updateTempAuthNum", temp);
         return "OK";

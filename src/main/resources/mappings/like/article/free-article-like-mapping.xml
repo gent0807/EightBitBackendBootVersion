@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FreeArticleLikeMyBatisDAO">
+
+    <select id="getArticleLikers" resultType="string">
+        select liker from freeArticleLike where writer=#{author} and regdate=#{regdate}
+    </select>
+
+
+    <insert id="insertArticleLike">
+        insert into freeArticleLike values (#{liker},#{author},#{regdate})
+    </insert>
+
+
+    <delete id="deleteArticleLike">
+        delete from freeArticleLike where liker=#{liker} and writer=#{author} and regdate=#{regdate}
+    </delete>
+
+</mapper>

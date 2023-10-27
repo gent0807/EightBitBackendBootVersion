@@ -13,4 +13,5 @@ public class ArticleView {
     private String viewer;
     private String writer;
     private String regdate;
+    private String boardType;
 }

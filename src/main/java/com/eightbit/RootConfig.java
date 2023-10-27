@@ -102,7 +102,7 @@ public class RootConfig {
             SqlSessionFactoryBean sqlSessionFactory= new SqlSessionFactoryBean();
             sqlSessionFactory.setDataSource(hikariDataSource());
             sqlSessionFactory.setConfigLocation(applicationContext.getResource("classpath:mybatis-config.xml"));
-            sqlSessionFactory.setMapperLocations(applicationContext.getResources("classpath:/mappings/*.xml"));
+            sqlSessionFactory.setMapperLocations(applicationContext.getResources("classpath:/mappings/**/*.xml"));
             return (SqlSessionFactory) sqlSessionFactory.getObject();
         }
 

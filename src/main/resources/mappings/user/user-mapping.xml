@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMyBatisDAO">
+
+    <select id="getUserList" resultType="user">
+        select * from user
+    </select>
+
+    <select id="getUserPassword" resultType="string">
+        select password from user where email=#{email}
+    </select>
+
+    <select id="getPassword" resultType="string">
+        select password from user where nickname=#{nickname}
+    </select>
+
+    <select id="getRole" resultType="string">
+        select role from user where nickname=#{nickname}
+    </select>
+
+    <select id="getUserProfileImagePath" resultType="string">
+        select profileImgPath from user where nickname=#{nickname}
+    </select>
+
+    <select id="getAccessToken" resultType="string">
+        select accesstoken from user where nickname=#{writer}
+    </select>
+
+    <select id="getRefreshToken" resultType="string">
+        select refreshtoken from user where nickname=#{writer}
+    </select>
+
+    <insert id="insertUser">
+        insert into user(email, password, nickname, role, profileImgPath) values(#{email}, #{password}, #{nickname}, #{role}, #{profileImgPath})
+    </insert>
+
+    <update id="updateUserPassword">
+        update user set password=#{password} where email=#{email}
+    </update>
+
+    <update id="updateToken">
+        update user set accesstoken=#{accessToken}, refreshtoken=#{refreshToken} where nickname=#{nickName}
+    </update>
+
+    <update id="updatePointByComment">
+        update user set point=point+5 where nickname=#{author}
+    </update>
+
+
+    <update id="updatePointByArticle">
+        update user set point=point+10 where nickname=#{writer}
+    </update>
+
+    <delete id="deleteUser">
+        delete from user where email=#{email}
+    </delete>
+
+</mapper>

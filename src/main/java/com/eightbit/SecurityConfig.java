@@ -32,18 +32,18 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Phone/*","/Email/*","/Board/**", "/Article/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Phone/*","/Email/*","/Board/**", "/Articles/**","/Likes","/Reports","/Comments","/ReComments").permitAll()
                 .antMatchers(HttpMethod.POST, "/Users/check/**","/Users/user/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/Reports/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/Reports/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/Board/article/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/Users/**").permitAll()
-                .antMatchers(HttpMethod.PUT, "/Board/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/Board/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/Users/token").permitAll()
-                .antMatchers(HttpMethod.PATCH, "/Users/token/reset").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/Users/token/reset","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/Users/point/up").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/Board/article/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/Board/report/**").permitAll()
-                .antMatchers(HttpMethod.DELETE, "Users/**","Board/**").authenticated().and()
+                .antMatchers(HttpMethod.DELETE, "/Users/**","/Board/**","/Articles","/Likes","/Reports","/Comments/**","/ReComments/**").authenticated().and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
      }
