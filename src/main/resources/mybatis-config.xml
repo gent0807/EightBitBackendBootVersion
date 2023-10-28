@@ -10,7 +10,7 @@
         <typeAlias alias="temp" type="com.eightbit.entity.email.Temp"/>
         <typeAlias alias="phone" type="com.eightbit.entity.phone.Phone"/>
         <typeAlias alias="comment" type="com.eightbit.entity.comment.Comment"/>
-        <typeAlias alias="uploadFile" type="com.eightbit.entity.uploadfile.UploadFile"/>
+        <typeAlias alias="uploadFile" type="com.eightbit.entity.file.UploadFile"/>
     </typeAliases>
 
 

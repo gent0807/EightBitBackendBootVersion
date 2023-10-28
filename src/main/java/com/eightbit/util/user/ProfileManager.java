@@ -1,22 +1,16 @@
 package com.eightbit.util.user;
 
-import com.eightbit.entity.email.Temp;
 import com.eightbit.entity.user.User;
-import com.eightbit.util.file.FolderManger;
+import com.eightbit.util.file.FolderAndFileManger;
 import lombok.RequiredArgsConstructor;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import javax.mail.Folder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -26,13 +20,13 @@ public class ProfileManager {
     @Value("${file.dir}")
     private String filepath;
 
-    private final FolderManger folderManger;
+    private final FolderAndFileManger folderAndFileManger;
 
     public boolean storeProfileImage(User user){
 
         File folder= new File(filepath+ user.getNickname()+"/profileImage");
 
-        boolean folderCreated= folderManger.createDir(folder);
+        boolean folderCreated= folderAndFileManger.createDir(folder);
 
         if(folderCreated){
             System.out.println("폴더 생성");

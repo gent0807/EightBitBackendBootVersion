@@ -1,4 +1,4 @@
-package com.eightbit.entity.uploadfile;
+package com.eightbit.entity.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
