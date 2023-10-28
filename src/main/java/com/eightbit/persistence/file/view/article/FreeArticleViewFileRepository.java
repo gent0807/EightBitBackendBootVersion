@@ -22,11 +22,11 @@ public class FreeArticleViewFileRepository {
     }
 
     public void registerArticleViewFile(UploadFile file){
-        mybatis.insert("FreeArticleAttachFileMyBatisDAO.insertArticleShareFile", file);
+        mybatis.insert("FreeArticleViewFileMyBatisDAO.insertArticleViewFile", file);
     }
 
-    public boolean removeArticleViewFile(UploadFile shareFile){
-        mybatis.delete("FreeArticleAttachFileMyBatisDAO.deleteArticleShareFile",shareFile);
+    public boolean removeArticleViewFile(UploadFile file){
+        mybatis.delete("FreeArticleViewFileMyBatisDAO.deleteArticleViewFile", file);
         return true;
     }
 }

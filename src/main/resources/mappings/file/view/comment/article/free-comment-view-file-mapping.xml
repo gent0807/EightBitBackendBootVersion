@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FreeCommentViewFileMyBatisDAO">
+
+    <select id="getViewFileList" resultType="uploadFile">
+        select * from freeCommentFileView where uploader=#{uploader} and regdate=#{regdate}
+    </select>
+
+    <select id="getViewFile" resultType="uploadFile">
+        select * from freeCommentFileView where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+    </select>
+
+    <insert id="insertArticleViewFile">
+        insert into freeCommmentFileView(uploader, regdate, storeFilename, uploadFilename) values(#{uploader}, #{regdate}, #{storeFilename}, #{uploadFilename})
+    </insert>
+
+    <delete id="deleteArticleViewFile">
+        delete from freeCommentFileView where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+    </delete>
+
+</mapper>

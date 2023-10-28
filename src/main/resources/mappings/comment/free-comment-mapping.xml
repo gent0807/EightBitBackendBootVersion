@@ -19,6 +19,10 @@
         select max(a.seq) as seq from (select seq from freeReply where author=#{author}) as a;
     </select>
 
+    <select id="getOriginWriterAndRegdate" resultType="comment">
+        select original_author, original_regdate from freeReply where author=#{uploader} and regdate=#{regdate}
+    </select>
+
     <update id="updateReply">
         update freeReply set content=#{content}, updatedate=now() where author=#{author} and regdate=#{regdate}
     </update>

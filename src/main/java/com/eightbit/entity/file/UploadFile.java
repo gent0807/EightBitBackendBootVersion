@@ -16,8 +16,13 @@ public class UploadFile {
     private String storeFilename;
     private String uploadFilename;
 
-    public UploadFile(String writer, String regdate, String storeFilename, String originFilename) {
-        this.uploader=writer;
+    public UploadFile(String uploader, String regdate){
+        this.uploader=uploader;
+        this.regdate=regdate;
+    }
+
+    public UploadFile(String uploader, String regdate, String storeFilename, String originFilename) {
+        this.uploader=uploader;
         this.regdate=regdate;
         this.storeFilename=storeFilename;
         this.uploadFilename=originFilename;

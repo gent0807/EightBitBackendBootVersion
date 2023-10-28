@@ -4,14 +4,14 @@
 
 <mapper namespace="ArticleViewMyBatisDAO">
     <select id="getArticleView" resultType="_int">
-        select count(*) from articleView where viewer=#{viewer} and writer=#{writer} and regdate=#{regdate} and boardType=#{boardType}
+        select count(*) from articleView where viewer=#{viewer} and writer=#{writer} and regdate=#{regdate} and contentType=#{contentType}
     </select>
 
     <update id="updateArticleView">
-        update articleView set viewdate=now() where viewer=#{viewer} and writer=#{writer} and regdate=#{regdate} and boardType=#{boardType}
+        update articleView set viewdate=now() where viewer=#{viewer} and writer=#{writer} and regdate=#{regdate} and contentType=#{contentType}
     </update>
 
     <insert id="insertArticleView">
-        insert into articleView(viewer, writer, regdate, boardType) values(#{viewer},#{writer},#{regdate}, #{boardType})
+        insert into articleView(viewer, writer, regdate, contentType) values(#{viewer},#{writer},#{regdate}, #{contentType})
     </insert>
 </mapper>

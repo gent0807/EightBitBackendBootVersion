@@ -33,7 +33,6 @@
         select writer, regdate from board where seq=#{seq}
     </select>
 
-
     <select id="selectLikeOfArticle" resultType="article">
         select likecount from board where writer=#{writer} and regdate=#{regdate}
     </select>

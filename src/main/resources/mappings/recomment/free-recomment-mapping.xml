@@ -26,6 +26,10 @@
         select regdate, updatedate from freeReply where seq=#{seq}
     </select>
 
+    <select id="getOriginCommenterAndRegdate" resultType="comment">
+        select original_author, original_regdate from freeReComment where author=#{uploader} and regdate=#{regdate}
+    </select>
+
     <update id="updateReComment">
         update freeReComment set content=#{content}, updatedate=now() where author=#{author} and regdate=#{regdate}
     </update>

@@ -2,7 +2,7 @@ package com.eightbit.controller.file.attach.article;
 
 
 import com.eightbit.entity.file.UploadFile;
-import com.eightbit.inter.file.FileService;
+import com.eightbit.inter.file.BoardFileService;
 import com.eightbit.persistence.file.attach.article.FreeArticleAttachFileRepository;
 import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,21 +37,21 @@ import java.util.List;
 @PropertySource("classpath:upload.properties")
 public class FreeArticleAttachFileController {
 
-    private final FileService fileService;
+    private final BoardFileService boardFileService;
 
     private final FreeArticleAttachFileRepository freeArticleAttachFileRepository;
 
     private final TokenManager tokenManager;
 
-    @GetMapping(value="/attaches/{writer}/{regdate}") //Files/attach/article/free/attatches
-    public ResponseEntity<List<UploadFile>> getArticleAttachFileList(@PathVariable String writer, @PathVariable String regdate, UploadFile uploadFile){
-        uploadFile.setUploader(writer);
+    @GetMapping(value="/attaches/{uploader}/{regdate}") //Files/attach/article/free/attatches
+    public ResponseEntity<List<UploadFile>> getFreeArticleAttachFileList(@PathVariable String uploader, @PathVariable String regdate, UploadFile uploadFile){
+        uploadFile.setUploader(uploader);
         uploadFile.setRegdate(regdate);
         return  ResponseEntity.ok().body(freeArticleAttachFileRepository.getAttachFileList(uploadFile));
     }
 
     @GetMapping(value = "/attach/{id}/{uploader}/{regdate}")  //Files/attach/article/free/attach
-    public ResponseEntity<Resource> downloadArticleAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
+    public ResponseEntity<Resource> downloadFreeArticleAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
                                                        @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
         uploadFile.setUploader(uploader);
         uploadFile.setRegdate(regdate);
@@ -74,14 +73,14 @@ public class FreeArticleAttachFileController {
 
     @PostMapping(value = "/files") //Files/attach/article/free/files
     @Transactional
-    public void insertArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
+    public void insertFreeArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
                                         @RequestParam(value="regdate") String regdate,
                                         @RequestParam(value="files") List<MultipartFile> files,
                                         String token, @Value("${file.dir}") String dir) throws IOException, ServletException {
 
 
         if(tokenManager.checkAccessToken(request, token, writer)) {
-            List<UploadFile> sharefiles=fileService.registerBoardFiles(writer, regdate, files, dir, "article", "free", "sharefiles");
+            List<UploadFile> sharefiles= boardFileService.registerBoardFiles(writer, regdate, files, dir, "article", "free", "sharefiles");
             for(UploadFile sharefile : sharefiles){
                 freeArticleAttachFileRepository.registerArticleShareFile(sharefile);
             }
@@ -90,12 +89,12 @@ public class FreeArticleAttachFileController {
 
     @DeleteMapping(value="/files") //Files/attach/article/free/files
     @Transactional
-    public void deleteArticleShareFiles(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
+    public void deleteFreeArticleShareFiles(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
         if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
 
             for(UploadFile deleteFile : deleteFileList){
                 if (freeArticleAttachFileRepository.removeArticleShareFile(deleteFile)) {
-                    fileService.removeBoardFile(deleteFile, "article", "free", "sharefiles");
+                    boardFileService.removeBoardFile(deleteFile, "article", "free", "sharefiles");
                 }
             }
         }

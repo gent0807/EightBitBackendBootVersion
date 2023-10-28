@@ -1,8 +1,7 @@
 package com.eightbit.persistence.article;
 
+
 import com.eightbit.entity.article.Article;
-import com.eightbit.entity.comment.Comment;
-import com.eightbit.entity.file.UploadFile;
 import com.eightbit.entity.view.ArticleView;
 import com.eightbit.util.file.FolderAndFileManger;
 import lombok.RequiredArgsConstructor;
@@ -13,17 +12,18 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class FreeArticleRepository {
+public class NoticeArticleRepository {
 
     private final SqlSessionTemplate mybatis;
 
     private final FolderAndFileManger folderAndFileManger;
+
     public List<Article> getList(){
-        return mybatis.selectList("BoardMyBatisDAO.getFreeArticleList");
+        return mybatis.selectList("NoticeArticleMyBatisDAO.getFreeArticleList");
     }
 
     public List<Article> getUserArticles(String writer){
-        return mybatis.selectList("BoardMyBatisDAO.getUserArticles", writer);
+        return mybatis.selectList("NoticeArticleMyBatisDAO.getUserArticles", writer);
     }
 
 
@@ -41,27 +41,25 @@ public class FreeArticleRepository {
             }
         }
 
-        mybatis.update("BoardMyBatisDAO.updateArticleVisitCnt", articleView);
+        mybatis.update("NoticeArticleMyBatisDAO.updateArticleVisitCnt", articleView);
 
-        return mybatis.selectOne("BoardMyBatisDAO.getArticle", articleView);
+        return mybatis.selectOne("NoticeArticleMyBatisDAO.getArticle", articleView);
     }
 
     public Article registerArticle(Article article){
         mybatis.update("UserMyBatisDAO.updatePointByArticle", article);
-        mybatis.insert("BoardMyBatisDAO.insertArticle", article);
-        return  mybatis.selectOne("BoardMyBatisDAO.findWriterAndRegdate",mybatis.selectOne("BoardMyBatisDAO.selectSeqOfWriter", article));
+        mybatis.insert("NoticeArticleMyBatisDAO.insertArticle", article);
+        return  mybatis.selectOne("NoticeArticleMyBatisDAO.findWriterAndRegdate",mybatis.selectOne("NoticeArticleMyBatisDAO.selectSeqOfWriter", article));
     }
 
     public void modifyArticle(Article article) {
-        mybatis.update("BoardMyBatisDAO.updateArticle", article);
+        mybatis.update("NoticeArticleMyBatisDAO.updateArticle", article);
     }
 
     public boolean removeArticle(Article article){
-        mybatis.delete("BoardMyBatisDAO.deleteArticle", article);
+        mybatis.delete("NoticeArticleMyBatisDAO.deleteArticle", article);
         folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(),"article","free", "sharefiles");
         folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(), "article", "free", "viewfiles");
         return true;
     }
-
-
 }

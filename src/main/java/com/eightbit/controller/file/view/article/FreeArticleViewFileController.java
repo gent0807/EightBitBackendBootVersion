@@ -2,8 +2,7 @@ package com.eightbit.controller.file.view.article;
 
 
 import com.eightbit.entity.file.UploadFile;
-import com.eightbit.inter.file.FileService;
-import com.eightbit.persistence.file.attach.article.FreeArticleAttachFileRepository;
+import com.eightbit.inter.file.BoardFileService;
 import com.eightbit.persistence.file.view.article.FreeArticleViewFileRepository;
 import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
@@ -37,21 +36,21 @@ import java.util.List;
 @PropertySource("classpath:upload.properties")
 public class FreeArticleViewFileController {
 
-    private final FileService fileService;
+    private final BoardFileService boardFileService;
 
     private final FreeArticleViewFileRepository freeArticleViewFileRepository;
 
     private final TokenManager tokenManager;
 
-    @GetMapping(value="/views/{writer}/{regdate}")
-    public ResponseEntity<List<UploadFile>> getArticleAttachFileList(@PathVariable String writer, @PathVariable String regdate, UploadFile uploadFile){
-        uploadFile.setUploader(writer);
+    @GetMapping(value="/views/{uploader}/{regdate}")
+    public ResponseEntity<List<UploadFile>> getFreeArticleViewFileList(@PathVariable String uploader, @PathVariable String regdate, UploadFile uploadFile){
+        uploadFile.setUploader(uploader);
         uploadFile.setRegdate(regdate);
         return  ResponseEntity.ok().body(freeArticleViewFileRepository.getViewFileList(uploadFile));
     }
 
     @GetMapping(value = "/view/{id}/{uploader}/{regdate}")
-    public ResponseEntity<Resource> downloadArticleAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
+    public ResponseEntity<Resource> downloadFreeArticleViewFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
                                                               @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
         uploadFile.setUploader(uploader);
         uploadFile.setRegdate(regdate);
@@ -73,14 +72,14 @@ public class FreeArticleViewFileController {
 
     @PostMapping(value = "/files") //Files/attach/article/free/files
     @Transactional
-    public void insertArticleViewFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
+    public void insertFreeArticleViewFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
                                         @RequestParam(value="regdate") String regdate,
                                         @RequestParam(value="files") List<MultipartFile> files,
                                         String token, @Value("${file.dir}") String dir) throws IOException, ServletException {
 
 
         if(tokenManager.checkAccessToken(request, token, writer)) {
-            List<UploadFile> viewfiles=fileService.registerBoardFiles(writer, regdate, files, dir, "article", "free", "viewfiles");
+            List<UploadFile> viewfiles= boardFileService.registerBoardFiles(writer, regdate, files, dir, "article", "free", "viewfiles");
             for(UploadFile viewfile : viewfiles){
                 freeArticleViewFileRepository.registerArticleViewFile(viewfile);
             }
@@ -89,12 +88,12 @@ public class FreeArticleViewFileController {
 
     @DeleteMapping(value="/files")
     @Transactional
-    public void deleteArticleViewFiles(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
+    public void deleteFreeArticleViewFiles(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
         if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
 
             for(UploadFile deleteFile : deleteFileList){
                 if (freeArticleViewFileRepository.removeArticleViewFile(deleteFile)) {
-                    fileService.removeBoardFile(deleteFile, "article", "free", "viewfiles");
+                    boardFileService.removeBoardFile(deleteFile, "article", "free", "viewfiles");
                 }
             }
         }

@@ -22,21 +22,12 @@ public class FreeArticleAttachFileRepository {
         return mybatis.selectOne("FreeArticleAttachFileMyBatisDAO.getAttachFile", uploadFile);
     }
 
-    public Article getOriginWriterAndRegdate(Comment comment){
-        return mybatis.selectOne("BoardMyBatisDAO.getOriginWriterAndRegdate", comment);
-    }
-
-    public Comment getOriginReplyerAndRegdate(Comment reComment){
-        return mybatis.selectOne("BoardMyBatisDAO.getOriginReplyerAndRegdate", reComment);
-    }
-
-
     public void registerArticleShareFile(UploadFile file){
         mybatis.insert("FreeArticleAttachFileMyBatisDAO.insertArticleShareFile", file);
     }
 
-    public boolean removeArticleShareFile(UploadFile shareFile){
-        mybatis.delete("FreeArticleAttachFileMyBatisDAO.deleteArticleShareFile",shareFile);
+    public boolean removeArticleShareFile(UploadFile file){
+        mybatis.delete("FreeArticleAttachFileMyBatisDAO.deleteArticleShareFile", file);
         return true;
     }
 }

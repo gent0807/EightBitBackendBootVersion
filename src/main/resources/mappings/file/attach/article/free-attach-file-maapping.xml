@@ -4,7 +4,7 @@
 
 <mapper namespace="FreeArticleAttachFileMyBatisDAO">
 
-    <select id="getAttachList" resultType="uploadFile">
+    <select id="getAttachFileList" resultType="uploadFile">
         select * from freeArticleFileShare where uploader=#{uploader} and regdate=#{regdate}
     </select>
 

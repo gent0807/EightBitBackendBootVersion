@@ -8,9 +8,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ArticleService {
-    public List<Article> getList();
-    public List<Article> getUserArticles(String writer);
-    public Article registerArticle(Article article);
-    public void modifyArticle(Article article);
-    public void removeArticle(Article article);
+
 }
