@@ -1,10 +1,8 @@
 package com.eightbit.controller.comment.article;
 
 import com.eightbit.entity.comment.Comment;
-import com.eightbit.inter.article.ArticleService;
-import com.eightbit.inter.comment.CommentService;
 import com.eightbit.persistence.comment.article.FreeCommentRepository;
-import com.eightbit.util.token.TokenManager;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

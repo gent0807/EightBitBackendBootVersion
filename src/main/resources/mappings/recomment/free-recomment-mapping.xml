@@ -9,9 +9,9 @@
 
     <select id="getReCommentCount" resultType="_int">
         select count(*) from freeReComment A
-                                 left join freeReply B on A.original_author=B.author and A.original_regdate=B.regdate
-                                 left join board C on B.original_author=C.writer and B.original_regdate=C.regdate
-        where writer=#{writer} and C.regdate=#{regdate}
+                                 join freeReply B on A.original_author=B.author and A.original_regdate=B.regdate
+                                    join board C on B.original_author=C.writer and B.original_regdate=C.regdate
+                                        where writer=#{writer} and C.regdate=#{regdate}
     </select>
 
     <insert id="insertReComment">

@@ -4,7 +4,8 @@
 
 <mapper namespace="FreeCommentLikeMyBatisDAO">
 
-    <select id="getReplyLikers" resultType="string">
+
+    <select id="getReplyLikes" resultType="string">
         select liker from freeReplyLike where replyer=#{author} and regdate=#{regdate}
     </select>
 

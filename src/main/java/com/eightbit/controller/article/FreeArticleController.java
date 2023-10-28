@@ -1,34 +1,21 @@
 package com.eightbit.controller.article;
 
 import com.eightbit.entity.article.Article;
-import com.eightbit.entity.comment.Comment;
-import com.eightbit.entity.uploadfile.UploadFile;
 import com.eightbit.entity.view.ArticleView;
 import com.eightbit.inter.article.ArticleService;
 import com.eightbit.persistence.article.FreeArticleRepository;
-import com.eightbit.util.token.TokenManager;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.util.UriUtils;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -67,50 +54,6 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(articleService.getUserArticles(writer));
     }
 
-
-    @GetMapping(value="/article/attaches/{writer}/{regdate}") //Files/attach/article/free/attatches
-    public ResponseEntity<List<UploadFile>> getAttachList(@PathVariable String writer, @PathVariable String regdate, UploadFile uploadFile){
-        uploadFile.setUploader(writer);
-        uploadFile.setRegdate(regdate);
-        return  ResponseEntity.ok().body(articleService.getAttachList(uploadFile));
-    }
-
-    @GetMapping(value = "/article/attach/{id}/{uploader}/{regdate}")  //Files/attach/article/free/attatch
-    public ResponseEntity<Resource> downloadAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
-                                                       @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
-        uploadFile.setUploader(uploader);
-        uploadFile.setRegdate(regdate);
-        uploadFile.setId(id);
-        uploadFile= articleService.getAttachFile(uploadFile);
-        String storeFilename=uploadFile.getStoreFilename();
-        String uploadFilename=uploadFile.getUploadFilename();
-        String encodedUploadFileName= UriUtils.encode(uploadFilename, StandardCharsets.UTF_8);
-        String contentDisposition="attachment; filename=\""+ encodedUploadFileName +"\"";
-
-        regdate=regdate.replace(":","");
-
-        UrlResource resource=new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/sharefiles/"+storeFilename);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(resource);
-    }
-
-    @GetMapping("/article/view/{id}/{uploader}/{regdate}") //Files/view/article/free/view
-    public Resource downloadViewFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
-                                     @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
-        uploadFile.setUploader(uploader);
-        uploadFile.setRegdate(regdate);
-        uploadFile.setId(id);
-        uploadFile= articleService.getViewFile(uploadFile);
-        String storeFilename=uploadFile.getStoreFilename();
-
-        regdate=regdate.replace(":","");
-
-        return new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/viewfiles/"+storeFilename);
-    }
-
-
     @PostMapping(value = "/article")
     @Transactional
     public ResponseEntity<Article> insertArticle(HttpServletRequest request, String token, @RequestBody Article article){
@@ -120,60 +63,6 @@ public class FreeArticleController {
         }
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
-
-
-    @PostMapping(value = "/article/shareFiles") //Files/attach/article/free/files
-    @Transactional
-    public void insertArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
-                                        @RequestParam(value="regdate") String regdate,
-                                        @RequestParam(value="files") List<MultipartFile> files,
-                                        String token, @Value("${file.dir}") String dir) throws IOException, ServletException {
-
-
-        if(tokenManager.checkAccessToken(request, token, writer)) {
-            articleService.registerArticleShareFiles(writer, regdate, files, dir);
-        }
-    }
-
-    @PostMapping(value="/article/viewFiles") //Files/view/article/free/files
-    @Transactional
-    public ResponseEntity<List<UploadFile>> insertArticleViewFiles(HttpServletRequest request, @RequestParam(value="writer") String writer,
-                                                         @RequestParam(value = "regdate") String regdate,
-                                                         @RequestParam(value ="files") List<MultipartFile> files,
-                                                         String token, @Value("${file.dir}") String dir) throws IOException {
-        if(tokenManager.checkAccessToken(request, token, writer)){
-            return ResponseEntity.ok().body(articleService.registerArticleViewFiles(writer, regdate, files, dir));
-        }
-
-        return ResponseEntity.ok().body(null);
-    }
-
-    @PostMapping(value = "/article/reply/viewFiles") //Files/view/comment/free/files
-    @Transactional
-    public ResponseEntity<List<UploadFile>> insertReplyViewFiles(HttpServletRequest request, @RequestParam(value="replyer") String replyer,
-                                                                 @RequestParam(value = "regdate") String regdate,
-                                                                 @RequestParam(value = "files") List<MultipartFile> files,
-                                                                 String token, @Value("${file.dir}") String dir) throws IOException{
-        if(tokenManager.checkAccessToken(request,token, replyer)){
-            return ResponseEntity.ok().body(articleService.registerReplyViewFiles(replyer,regdate,files,dir));
-        }
-        return ResponseEntity.ok().body(null);
-    }
-
-    @PostMapping(value = "/article/reComment/viewFiles") //Files/view/reComment/free/files
-    @Transactional
-    public ResponseEntity<List<UploadFile>> insertReCommentViewFiles(HttpServletRequest request, @RequestParam(value="reCommenter") String reCommenter,
-                                                                 @RequestParam(value = "regdate") String regdate,
-                                                                 @RequestParam(value = "files") List<MultipartFile> files,
-                                                                 String token, @Value("${file.dir}") String dir) throws IOException {
-        if (tokenManager.checkAccessToken(request, token, reCommenter)) {
-            return ResponseEntity.ok().body(articleService.registerReCommentViewFiles(reCommenter, regdate, files, dir));
-        }
-        return ResponseEntity.ok().body(null);
-    }
-
-
-
 
     @PatchMapping(value="/article")
     @Transactional
@@ -185,19 +74,114 @@ public class FreeArticleController {
         }
     }
 
-
-
     @DeleteMapping(value = "/article/{writer}/{regdate}/{role}")
     @Transactional
     public void deleteArticle(HttpServletRequest request, String token,
-                             @PathVariable("writer") String writer, @PathVariable("regdate") String regdate,
-                             @PathVariable("role") String role, Article article){
+                              @PathVariable("writer") String writer, @PathVariable("regdate") String regdate,
+                              @PathVariable("role") String role, Article article){
         if(tokenManager.checkAccessToken(request,  token, writer)|| role.equals("ADMIN")){
             article.setWriter(writer);
             article.setRegdate(regdate);
             articleService.removeArticle(article);
         }
     }
+
+
+
+//    @GetMapping(value="/article/attaches/{writer}/{regdate}") //Files/attach/article/free/attatches
+//    public ResponseEntity<List<UploadFile>> getAttachList(@PathVariable String writer, @PathVariable String regdate, UploadFile uploadFile){
+//        uploadFile.setUploader(writer);
+//        uploadFile.setRegdate(regdate);
+//        return  ResponseEntity.ok().body(articleService.getAttachList(uploadFile));
+//    }
+
+//    @GetMapping(value = "/article/attach/{id}/{uploader}/{regdate}")  //Files/attach/article/free/attatch
+//    public ResponseEntity<Resource> downloadAttachFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
+//                                                       @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
+//        uploadFile.setUploader(uploader);
+//        uploadFile.setRegdate(regdate);
+//        uploadFile.setId(id);
+//        uploadFile= articleService.getAttachFile(uploadFile);
+//        String storeFilename=uploadFile.getStoreFilename();
+//        String uploadFilename=uploadFile.getUploadFilename();
+//        String encodedUploadFileName= UriUtils.encode(uploadFilename, StandardCharsets.UTF_8);
+//        String contentDisposition="attachment; filename=\""+ encodedUploadFileName +"\"";
+
+//        regdate=regdate.replace(":","");
+
+//        UrlResource resource=new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/sharefiles/"+storeFilename);
+
+//       return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+//                .body(resource);
+//    }
+
+//    @GetMapping("/article/view/{id}/{uploader}/{regdate}") //Files/view/article/free/view
+//    public Resource downloadViewFile(@PathVariable int id, @PathVariable String uploader, @PathVariable String regdate,
+//                                     @Value("${file.dir}") String filepath, UploadFile uploadFile) throws MalformedURLException {
+//        uploadFile.setUploader(uploader);
+//        uploadFile.setRegdate(regdate);
+//        uploadFile.setId(id);
+//        uploadFile= articleService.getViewFile(uploadFile);
+//        String storeFilename=uploadFile.getStoreFilename();
+
+//        regdate=regdate.replace(":","");
+
+//        return new UrlResource("file:"+filepath+uploader+"/board/article/"+regdate+"/viewfiles/"+storeFilename);
+//    }
+
+
+
+//    @PostMapping(value = "/article/shareFiles") //Files/attach/article/free/files
+//    @Transactional
+//    public void insertArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
+//                                        @RequestParam(value="regdate") String regdate,
+//                                        @RequestParam(value="files") List<MultipartFile> files,
+//                                        String token, @Value("${file.dir}") String dir) throws IOException, ServletException {
+//
+//
+//        if(tokenManager.checkAccessToken(request, token, writer)) {
+//            articleService.registerArticleShareFiles(writer, regdate, files, dir);
+//        }
+//    }
+
+//    @PostMapping(value="/article/viewFiles") //Files/view/article/free/files
+//    @Transactional
+//    public ResponseEntity<List<UploadFile>> insertArticleViewFiles(HttpServletRequest request, @RequestParam(value="writer") String writer,
+//                                                         @RequestParam(value = "regdate") String regdate,
+//                                                         @RequestParam(value ="files") List<MultipartFile> files,
+//                                                         String token, @Value("${file.dir}") String dir) throws IOException {
+//        if(tokenManager.checkAccessToken(request, token, writer)){
+//            return ResponseEntity.ok().body(articleService.registerArticleViewFiles(writer, regdate, files, dir));
+//        }
+//
+//        return ResponseEntity.ok().body(null);
+//    }
+//
+//    @PostMapping(value = "/article/reply/viewFiles") //Files/view/comment/free/files
+//    @Transactional
+//    public ResponseEntity<List<UploadFile>> insertReplyViewFiles(HttpServletRequest request, @RequestParam(value="replyer") String replyer,
+//                                                                 @RequestParam(value = "regdate") String regdate,
+//                                                                 @RequestParam(value = "files") List<MultipartFile> files,
+//                                                                 String token, @Value("${file.dir}") String dir) throws IOException{
+//        if(tokenManager.checkAccessToken(request,token, replyer)){
+//            return ResponseEntity.ok().body(articleService.registerReplyViewFiles(replyer,regdate,files,dir));
+//        }
+//        return ResponseEntity.ok().body(null);
+//    }
+//
+//    @PostMapping(value = "/article/reComment/viewFiles") //Files/view/reComment/free/files
+//    @Transactional
+//    public ResponseEntity<List<UploadFile>> insertReCommentViewFiles(HttpServletRequest request, @RequestParam(value="reCommenter") String reCommenter,
+//                                                                 @RequestParam(value = "regdate") String regdate,
+//                                                                 @RequestParam(value = "files") List<MultipartFile> files,
+//                                                                 String token, @Value("${file.dir}") String dir) throws IOException {
+//        if (tokenManager.checkAccessToken(request, token, reCommenter)) {
+//            return ResponseEntity.ok().body(articleService.registerReCommentViewFiles(reCommenter, regdate, files, dir));
+//        }
+//        return ResponseEntity.ok().body(null);
+//    }
+//
 
 //    @DeleteMapping(value="/article/shareFiles/{id}/{writer}/{regdate}")
 //     public void deleteArticleShareFile(HttpServletRequest request, String token, @PathVariable int id,
@@ -210,17 +194,17 @@ public class FreeArticleController {
 //            articleService.removeArticleShareFile(uploadFile);
 //        }
 //    }
-
-    @DeleteMapping(value="/article/shareFiles") //Files/attach/article/free/files
-    @Transactional
-    public void deleteArticleShareFile(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
-        if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
-
-            for(UploadFile deleteFile : deleteFileList){
-                articleService.removeArticleShareFile(deleteFile);
-            }
-        }
-    }
+//
+//    @DeleteMapping(value="/article/shareFiles") //Files/attach/article/free/files
+//    @Transactional
+//    public void deleteArticleShareFile(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
+//        if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
+//
+//            for(UploadFile deleteFile : deleteFileList){
+//                articleService.removeArticleShareFile(deleteFile);
+//            }
+//        }
+//    }
 
 
 

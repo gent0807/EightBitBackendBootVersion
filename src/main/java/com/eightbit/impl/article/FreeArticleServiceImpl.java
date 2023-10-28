@@ -39,15 +39,23 @@ public class FreeArticleServiceImpl implements ArticleService {
         return freeArticleRepository.getUserArticles(writer);
     }
 
-
     @Override
-    public List<UploadFile> getAttachList(UploadFile uploadFile) {
-        return freeArticleRepository.getAttachList(uploadFile);
+    public Article registerArticle(Article article) {
+        freeArticleRepository.registerArticle(article);
+        return freeArticleRepository.findWriterAndRegdate(freeArticleRepository.findSeqOfWriter(article));
     }
 
     @Override
-    public UploadFile getAttachFile(UploadFile uploadFile){
-        return freeArticleRepository.getAttachFile(uploadFile);
+    public void modifyArticle(Article article) {
+        freeArticleRepository.modifyArticle(article);
+    }
+
+
+    @Override
+    public void removeArticle(Article article) {
+        if(freeArticleRepository.removeArticle(article)){
+            removeArticleFilesAndFolder(article.getWriter(), article.getRegdate());
+        }
     }
 
     @Override
@@ -55,12 +63,6 @@ public class FreeArticleServiceImpl implements ArticleService {
         return freeArticleRepository.getViewFile(uploadFile);
     }
 
-
-    @Override
-    public Article registerArticle(Article article) {
-        freeArticleRepository.registerArticle(article);
-        return freeArticleRepository.findWriterAndRegdate(freeArticleRepository.findSeqOfWriter(article));
-    }
 
     @Override
     public void registerArticleShareFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException {
@@ -199,22 +201,6 @@ public class FreeArticleServiceImpl implements ArticleService {
         return originFilename.substring(pos+1);
     }
 
-
-
-
-    @Override
-    public void modifyArticle(Article article) {
-        freeArticleRepository.modifyArticle(article);
-    }
-
-
-    @Override
-    public void removeArticle(Article article) {
-        if(freeArticleRepository.removeArticle(article)){
-            removeFilesAndFolder(article.getWriter(), article.getRegdate());
-        }
-    }
-
     @Override
     public void removeArticleShareFile(UploadFile uploadFile) {
         if(freeArticleRepository.removeArticleShareFile(uploadFile)){
@@ -243,7 +229,7 @@ public class FreeArticleServiceImpl implements ArticleService {
         }
     }
 
-    public void removeFilesAndFolder(String writer, String regdate){
+    public void removeArticleFilesAndFolder(String writer, String regdate){
         regdate=regdate.replace(":","");
         String filepath1=dir+writer+"/board/article/"+regdate+"/sharefiles";
         String filepath2=dir+writer+"/board/article/"+regdate;

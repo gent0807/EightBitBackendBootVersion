@@ -3,7 +3,7 @@ package com.eightbit.controller.like.article;
 
 import com.eightbit.entity.like.Like;
 import com.eightbit.persistence.like.article.FreeArticleLikeRepository;
-import com.eightbit.util.token.TokenManager;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

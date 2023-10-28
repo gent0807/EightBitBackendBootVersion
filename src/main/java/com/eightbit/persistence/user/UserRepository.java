@@ -1,9 +1,11 @@
 package com.eightbit.persistence.user;
 
 
+import com.eightbit.entity.email.Temp;
 import com.eightbit.entity.user.LoginResult;
 import com.eightbit.entity.user.TokenInfo;
 import com.eightbit.entity.user.User;
+import com.eightbit.util.user.ProfileManager;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.context.annotation.Primary;
@@ -25,6 +27,8 @@ public class UserRepository {
     private final SqlSessionTemplate mybatis;
 
     private final BCryptPasswordEncoder encoder;
+
+    private final ProfileManager profileManager;
 
     private Long expiredMs= 1000*60*60l;
 
@@ -87,7 +91,6 @@ public class UserRepository {
         return "OK";
     }
 
-
     public User findByNickname(String username){
         List<User> userList =mybatis.selectList("UserMyBatisDAO.getUserList");
         for(User user: userList){
@@ -96,6 +99,28 @@ public class UserRepository {
             }
         }
         return null;
+    }
+    public boolean insertProfileImg(User user){
+        List<Temp> tempList =mybatis.selectList("EmailMyBatisDAO.getTempList");
+        for(Temp temp: tempList){
+            if(encoder.matches(user.getEmail(), temp.getEmail())){
+
+                mybatis.delete("EmailMyBatisDAO.deleteTempRow", temp.getEmail());
+
+                System.out.println("이메일 인증 테이블에서 삭제");
+
+                user.setEmail(encoder.encode(user.getEmail()));
+                user.setPassword(encoder.encode(user.getPassword()));
+
+                if(profileManager.storeProfileImage(user)){
+                    System.out.println("스토어 프로필 이미지 저장 성공");
+                    return true;
+                }
+
+
+            }
+        }
+        return false;
     }
     public LoginResult login(User userVO){
         LoginResult loginResult=new LoginResult();

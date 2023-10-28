@@ -3,9 +3,8 @@ package com.eightbit.controller.recomment.article;
 import com.eightbit.entity.article.Article;
 import com.eightbit.entity.comment.Comment;
 
-import com.eightbit.inter.article.ArticleService;
 import com.eightbit.persistence.recomment.article.FreeReCommentRepository;
-import com.eightbit.util.token.TokenManager;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

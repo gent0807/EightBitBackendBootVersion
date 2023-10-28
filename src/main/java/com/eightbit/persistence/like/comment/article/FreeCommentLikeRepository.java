@@ -17,20 +17,18 @@ public class FreeCommentLikeRepository {
     private final SqlSessionTemplate mybatis;
 
 
-    public List<String> getReplyLikers(Like like){
-        return mybatis.selectList("FreeCommentLikeMyBatisDAO.getReplyLikers", like);
+    public List<String> getReplyLikes(Like like){
+        return  mybatis.selectList("FreeCommentLikeMyBatisDAO.getReplyLikes", like);
     }
-
-
 
     public List<String> registerReplyLike(Like like){
         mybatis.insert("FreeCommentLikeMyBatisDAO.insertReplyLike", like);
-        return mybatis.selectList("FreeCommentLikeMyBatisDAO.getReplyLikers", like);
+        return mybatis.selectList("FreeCommentLikeMyBatisDAO.getReplyLikes", like);
     }
 
 
     public List<String> removeReplyLike(Like like){
         mybatis.delete("FreeCommentLikeMyBatisDAO.deleteReplyLike", like);
-        return mybatis.selectList("FreeCommentLikeMyBatisDAO.getReplyLikers", like);
+        return mybatis.selectList("FreeCommentLikeMyBatisDAO.getReplyLikes", like);
     }
 }

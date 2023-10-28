@@ -5,10 +5,7 @@ import com.eightbit.entity.user.TokenInfo;
 import com.eightbit.entity.user.User;
 import com.eightbit.inter.user.UserService;
 import com.eightbit.persistence.user.UserRepository;
-import com.eightbit.util.token.TokenManager;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,21 +13,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Date;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -88,7 +76,7 @@ public class UserController {
 
         TokenInfo tokenInfo=userService.login(userVO);
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, userService.createCookie(tokenInfo).toString()).body(tokenInfo);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, tokenManager.createCookie(tokenInfo).toString()).body(tokenInfo);
 
         */
 
@@ -97,32 +85,8 @@ public class UserController {
 
 
     @PatchMapping(value = "/password")
-    public String updateUserPassword(@RequestBody User user){
+    public String updatePassword(@RequestBody User user){
         return userRepository.updateUserPassword(user);
-    }
-
-
-    @PatchMapping(value = "/token/reset/{nickname}")
-    public void resetToken(HttpServletRequest request, String token,
-                           @PathVariable String nickname, TokenInfo tokenInfo){
-
-        userService.resetToken(request, token, nickname, tokenInfo);
-    }
-
-    @PatchMapping(value="/token/{nickname}")
-    public ResponseEntity<String> updateToken(HttpServletRequest request, @Value("${jwt.secret}") String key, @RequestBody TokenInfo tokenInfo, String token, @PathVariable String nickname){
-
-        String result=userService.checkToken(request, key, token, nickname);
-
-        if(result.equals("possible to update token")){
-            tokenInfo=userService.updateToken(tokenInfo);
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, userService.createCookie(tokenInfo).toString()).body(tokenInfo.getAccessToken());
-        }
-        else {
-            return ResponseEntity.ok().body(result);
-        }
-
-
     }
 
 

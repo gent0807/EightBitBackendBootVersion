@@ -2,7 +2,7 @@ package com.eightbit.controller.report.recomment.article;
 
 import com.eightbit.entity.report.Report;
 import com.eightbit.persistence.report.recomment.article.FreeReCommentReportRepository;
-import com.eightbit.util.token.TokenManager;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

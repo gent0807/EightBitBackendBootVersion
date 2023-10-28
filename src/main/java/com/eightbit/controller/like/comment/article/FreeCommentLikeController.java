@@ -2,7 +2,7 @@ package com.eightbit.controller.like.comment.article;
 
 import com.eightbit.entity.like.Like;
 import com.eightbit.persistence.like.comment.article.FreeCommentLikeRepository;
-import com.eightbit.util.token.TokenManager;
+import com.eightbit.impl.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,14 +26,14 @@ public class FreeCommentLikeController {
     private final TokenManager tokenManager;
 
     @GetMapping(value = "/likes") //Likes/comment/free/likes
-    public ResponseEntity<List<String>> getReplyLikers(@RequestParam String replyer, @RequestParam String regdate, Like like){
+    public ResponseEntity<List<String>> getReplyLikes(@RequestParam String replyer, @RequestParam String regdate, Like like){
         like.setAuthor(replyer);
         like.setRegdate(regdate);
-        return ResponseEntity.ok().body(freeCommentLikeRepository.getReplyLikers(like));
+        return ResponseEntity.ok().body(freeCommentLikeRepository.getReplyLikes(like));
     }
 
 
-    @PostMapping(value = "//like") //Likes/comment/free/like
+    @PostMapping(value = "/like") //Likes/comment/free/like
     @Transactional
     public ResponseEntity<List<String>> insertReplyLike(HttpServletRequest request, String token, @RequestBody Like like){
         if(tokenManager.checkAccessToken(request, token, like.getLiker())){
@@ -43,7 +43,7 @@ public class FreeCommentLikeController {
     }
 
 
-    @DeleteMapping(value = "//like/{liker}/{replyer}/{regdate}") //Likes/comment/free/like
+    @DeleteMapping(value = "/like/{liker}/{replyer}/{regdate}") //Likes/comment/free/like
     @Transactional
     public ResponseEntity<List<String>> deleteReplyLike(HttpServletRequest request, String token, @PathVariable String liker,
                                                         @PathVariable String replyer, @PathVariable String regdate, Like like){

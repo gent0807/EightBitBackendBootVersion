@@ -13,8 +13,6 @@ public interface ArticleService {
     public List<Article> getList();
     public List<Article> getUserArticles(String writer);
 
-    public List<UploadFile> getAttachList(UploadFile uploadFile);
-    public UploadFile getAttachFile(UploadFile uploadFile);
     public UploadFile getViewFile(UploadFile uploadFile);
     public Article registerArticle(Article article);
     public void registerArticleShareFiles(String writer, String regdate, List<MultipartFile> files, String dir) throws IOException;
