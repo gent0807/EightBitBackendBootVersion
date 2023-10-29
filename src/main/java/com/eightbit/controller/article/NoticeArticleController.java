@@ -39,11 +39,11 @@ public class NoticeArticleController {
 
     @GetMapping(value="/article")
     public ResponseEntity<Article> getArticle(@RequestParam String viewer, @RequestParam String writer, @RequestParam String regdate,
-                                              @RequestParam String boardType, ArticleView articleView){
+                                              @RequestParam String contentType, ArticleView articleView){
         articleView.setViewer(viewer);
         articleView.setWriter(writer);
         articleView.setRegdate(regdate);
-        articleView.setBoardType(boardType);
+        articleView.setContentType(contentType);
         return ResponseEntity.ok().body(noticeArticleRepository.getArticle(articleView));
     }
 

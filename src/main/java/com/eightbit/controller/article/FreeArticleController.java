@@ -52,6 +52,13 @@ public class FreeArticleController {
         return ResponseEntity.ok().body(freeArticleRepository.getUserArticles(writer));
     }
 
+    @GetMapping(value = "/totalCommentCount")
+    public ResponseEntity<Integer> getTotalCommentCount(@RequestParam String writer, @RequestParam String regdate, Article article){
+        article.setWriter(writer);
+        article.setRegdate(regdate);
+        return ResponseEntity.ok().body(freeArticleRepository.getTotalCommentCount(article));
+    }
+
     @PostMapping(value = "/article")
     @Transactional
     public ResponseEntity<Article> insertArticle(HttpServletRequest request, String token, @RequestBody Article article){

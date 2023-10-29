@@ -41,10 +41,10 @@ create table `board`(
     content varchar(200) not null,
     regdate datetime not null default current_timestamp,
     updatedate datetime not null default current_timestamp,
-    visit_count int not null default 0,
-    like_count int not null default 0,
+    visitcnt int not null default 0,
+    likecount int not null default 0,
     reply_count int not null default 0,
-    total_comment int not null default 0,
+    totalcomment int not null default 0,
     attach_count int unsigned not null default 0,
     abuse_report int not null default 0,
     19_report int not null default 0,
@@ -55,55 +55,60 @@ create table `board`(
     on update cascade on delete cascade
 );
 
+
+
 create table `freeReply`(
 	seq int not null auto_increment,
-    original_writer varchar(200) not null,
+    original_author varchar(200) not null,
     original_regdate datetime not null,
-    replyer varchar(200) not null,
+    author varchar(200) not null,
     content varchar(200) not null,
     regdate datetime not null default current_timestamp,
     updatedate datetime not null default current_timestamp,
-    like_count int not null default 0,
+    likecount int not null default 0,
     recomment_count int not null default 0,
     abuse_report int not null default 0,
     19_report int not null default 0,
     incoporate_report int not null default 0,
     primary key(seq),
-    unique key(replyer, regdate),
-    foreign key(original_writer, original_regdate) references `board`(writer, regdate)
+    unique key(author, regdate),
+    foreign key(original_author, original_regdate) references `board`(writer, regdate)
     on update cascade on delete cascade,
-    foreign key(replyer) references `user`(nickname)
+    foreign key(author) references `user`(nickname)
     on update cascade
     on delete cascade
 );
 
+
+
 create table `freeReComment`(
 	seq int not null auto_increment,
-    original_replyer varchar(200) not null,
+    original_author varchar(200) not null,
     original_regdate datetime not null,
-    reCommenter varchar(200) not null,
+    author varchar(200) not null,
     content varchar(200) not null,
     regdate datetime not null default current_timestamp,
     updatedate datetime not null default current_timestamp,
-    like_count int not null default 0,
     abuse_report int not null default 0,
     19_report int not null default 0,
     incoporate_report int not null default 0,
     primary key(seq),
-    unique key(reCommenter, regdate),
-    foreign key(original_replyer, original_regdate) references `freeReply`(replyer, regdate)
+    unique key(author, regdate),
+    foreign key(original_author, original_regdate) references `freeReply`(author, regdate)
     on update cascade on delete cascade,
-    foreign key(reCommenter) references `user`(nickname)
+    foreign key(author) references `user`(nickname)
     on update cascade
     on delete cascade
 );
 
-create table `freeArticleView`(
+
+
+create table `articleView`(
 	viewer varchar(50) not null,
     writer varchar(50) not null,
     regdate datetime not null default current_timestamp,
     viewdate datetime not null default current_timestamp,
-    boardtype varchar(50) not null default 'free',
+    contentType varchar(50) not null default 'free',
     foreign key(viewer) references `user`(nickname) on update cascade on delete cascade,
     foreign key(writer, regdate) references `board`(writer, regdate) on update cascade on delete cascade
 );
@@ -117,12 +122,14 @@ create table `freeArticleLike`(
     foreign key(writer, regdate) references `board`(writer, regdate) on update cascade on delete cascade
 );
 
+
+
 create table `freeReplyLike`(
 	liker varchar(50) not null,
     replyer varchar(50) not null,
     regdate datetime not null default current_timestamp,
     foreign key(liker) references `user`(nickname) on update cascade on delete cascade,
-    foreign key(replyer, regdate) references `freeReply`(replyer, regdate) on update cascade on delete cascade
+    foreign key(author, regdate) references `freeReply`(author, regdate) on update cascade on delete cascade
 );
 
 
@@ -131,7 +138,7 @@ create table `freeReCommentLike`(
     reCommenter varchar(50) not null,
     regdate datetime not null default current_timestamp,
     foreign key(liker) references `user`(nickname) on update cascade on delete cascade,
-    foreign key(reCommenter, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade
+    foreign key(reCommenter, regdate) references `freeReComment`(author, regdate) on update cascade on delete cascade
 );
 
 create table `freeArticleReport`(
@@ -150,7 +157,7 @@ create table `freeReplyReport`(
     regdate datetime not null default current_timestamp,
     report varchar(20) not null,
     foreign key(reporter) references `user`(nickname) on update cascade on delete cascade,
-    foreign key(replyer, regdate) references `freeReply`(replyer, regdate) on update cascade on delete cascade,
+    foreign key(replyer, regdate) references `freeReply`(author, regdate) on update cascade on delete cascade,
     foreign key(report) references `report`(report) on update cascade on delete cascade
 );
 
@@ -160,7 +167,7 @@ create table `freeReCommentReport`(
     regdate datetime not null default current_timestamp,
     report varchar(20) not null,
     foreign key(reporter) references `user`(nickname) on update cascade on delete cascade,
-    foreign key(reCommenter, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade,
+    foreign key(reCommenter, regdate) references `freeReComment`(author, regdate) on update cascade on delete cascade,
     foreign key(report) references `report`(report) on update cascade on delete cascade
 );
 
@@ -204,7 +211,7 @@ create table `freeReplyFileView`(
     regdate datetime not null default current_timestamp,
     storeFilename varchar(200) not null,
     uploadFilename varchar(200) not null,
-	foreign key(uploader, regdate) references `freeReply`(replyer, regdate) on update cascade on delete cascade
+	foreign key(uploader, regdate) references `freeReply`(author, regdate) on update cascade on delete cascade
 );
 
 create table `freeReCommentFileView`(
@@ -213,7 +220,7 @@ create table `freeReCommentFileView`(
     regdate datetime not null default current_timestamp,
     storeFilename varchar(200) not null,
     uploadFilename varchar(200) not null,
-	foreign key(uploader, regdate) references `freeReComment`(reCommenter, regdate) on update cascade on delete cascade
+	foreign key(uploader, regdate) references `freeReComment`(author, regdate) on update cascade on delete cascade
 );
 
 create table `follow`(
@@ -232,7 +239,7 @@ select * from `report`;
 select * from `board`;
 select * from `freeReply`;
 select * from `freeReComment`;
-select * from `freeArticleView`;
+select * from `ArticleView`;
 select * from `freeArticleLike`;
 select * from `freeReplyLike`;
 select * from `freeReCommentLike`;
@@ -240,6 +247,7 @@ select * from `freearticlefileshare`;
 select * from `freearticlefileview`;
 select * from `freereplyfileview`;
 select * from `freerecommentfileview`;
+select * from `freerecommentreport`;
 select * from `follow`;
 
 select * from information_schema.table_constraints where constraint_schema = 'eightbitdb';
@@ -255,7 +263,7 @@ DELIMITER $$
 		DECLARE writerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET writerTemp = NEW.original_writer;
+		SET writerTemp = NEW.original_author;
 		SET regdateTemp = NEW.original_regdate;
 
 		update `board` set `reply_count`= `reply_count`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
@@ -271,7 +279,7 @@ DELIMITER $$
 		DECLARE writerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET writerTemp = OLD.original_writer;
+		SET writerTemp = OLD.original_author;
 		SET regdateTemp = OLD.original_regdate;
 
 		update `board` set `reply_count`= `reply_count`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
@@ -319,7 +327,7 @@ DELIMITER $$
 		DECLARE writerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET writerTemp = NEW.original_writer;
+		SET writerTemp = NEW.original_author;
 		SET regdateTemp = NEW.original_regdate;
 
 		update `board` set `totalcomment`= `totalcomment`+1 where `writer`=writerTemp and `regdate`=regdateTemp;
@@ -335,7 +343,7 @@ DELIMITER $$
 		DECLARE writerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET writerTemp = OLD.original_writer;
+		SET writerTemp = OLD.original_author;
 		SET regdateTemp = OLD.original_regdate;
 
 		update `board` set `totalcomment`= `totalcomment`-1 where `writer`=writerTemp and `regdate`=regdateTemp;
@@ -351,12 +359,12 @@ DELIMITER $$
 		DECLARE replyerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET replyerTemp = NEW.original_replyer;
+		SET replyerTemp = NEW.original_author;
 		SET regdateTemp = NEW.original_regdate;
 
 		update `board` set `totalcomment`= `totalcomment`+1
-			where `writer`= (select `original_writer` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp)
-				and `regdate`= (select `original_regdate` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp);
+			where `writer`= (select `original_writer` from `freeReply` where `author`=replyerTemp and `regdate`=regdateTemp)
+				and `regdate`= (select `original_regdate` from `freeReply` where `author`=replyerTemp and `regdate`=regdateTemp);
 
 	END $$
 DELIMITER ;
@@ -369,12 +377,12 @@ DELIMITER $$
 		DECLARE replyerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET replyerTemp = OLD.original_replyer;
+		SET replyerTemp = OLD.original_author;
 		SET regdateTemp = OLD.original_regdate;
 
 		update `board` set `totalcomment`= `totalcomment`-1
-			where `writer`= (select `original_writer` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp)
-				and `regdate`= (select `original_regdate` from `freeReply` where `replyer`=replyerTemp and `regdate`=regdateTemp);
+			where `writer`= (select `original_writer` from `freeReply` where `author`=replyerTemp and `regdate`=regdateTemp)
+				and `regdate`= (select `original_regdate` from `freeReply` where `author`=replyerTemp and `regdate`=regdateTemp);
 
 	END $$
 DELIMITER ;
@@ -387,10 +395,10 @@ DELIMITER $$
 		DECLARE replyerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET replyerTemp = NEW.original_replyer;
+		SET replyerTemp = NEW.original_author;
 		SET regdateTemp = NEW.original_regdate;
 
-		update `freeReply` set `recomment_count`= `recomment_count`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		update `freeReply` set `recomment_count`= `recomment_count`+1 where `author`=replyerTemp and `regdate`=regdateTemp;
 
 	END $$
 DELIMITER ;
@@ -403,10 +411,10 @@ DELIMITER $$
 		DECLARE replyerTemp VARCHAR(50);
 		DECLARE regdateTemp datetime;
 
-		SET replyerTemp = OLD.original_replyer;
+		SET replyerTemp = OLD.original_author;
 		SET regdateTemp = OLD.original_regdate;
 
-		update `freeReply` set `recomment_count`= `recomment_count`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		update `freeReply` set `recomment_count`= `recomment_count`-1 where `author`=replyerTemp and `regdate`=regdateTemp;
 
 	END $$
 DELIMITER ;
@@ -422,7 +430,7 @@ DELIMITER $$
 		SET replyerTemp = NEW.replyer;
 		SET regdateTemp = NEW.regdate;
 
-		update `freeReply` set `likecount`= `likecount`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		update `freeReply` set `likecount`= `likecount`+1 where `author`=replyerTemp and `regdate`=regdateTemp;
 
 	END $$
 DELIMITER ;
@@ -438,7 +446,7 @@ DELIMITER $$
 		SET replyerTemp = OLD.replyer;
 		SET regdateTemp = OLD.regdate;
 
-		update `freeReply` set `likecount`= `likecount`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+		update `freeReply` set `likecount`= `likecount`-1 where `author`=replyerTemp and `regdate`=regdateTemp;
 
 	END $$
 DELIMITER ;
@@ -536,11 +544,11 @@ DELIMITER $$
         SET reportTemp= NEW.report;
 
         if reportTemp='abuse' then
-			update `freeReply` set `abuse_report`= `abuse_report`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+			update `freeReply` set `abuse_report`= `abuse_report`+1 where `author`=replyerTemp and `regdate`=regdateTemp;
 		elseif reportTemp='lewd' then
-			update `freeReply` set `19_report`=`19_report`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+			update `freeReply` set `19_report`=`19_report`+1 where `author`=replyerTemp and `regdate`=regdateTemp;
 		elseif reportTemp='incoporate' then
-			update `freeReply` set `incoporate_report`=`incoporate_report`+1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+			update `freeReply` set `incoporate_report`=`incoporate_report`+1 where `author`=replyerTemp and `regdate`=regdateTemp;
 		end if;
 	END $$
 DELIMITER ;
@@ -559,11 +567,11 @@ DELIMITER $$
         SET reportTemp= OLD.report;
 
         if reportTemp='abuse' then
-			update `freeReply` set `abuse_report`= `abuse_report`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+			update `freeReply` set `abuse_report`= `abuse_report`-1 where `author`=replyerTemp and `regdate`=regdateTemp;
 		elseif reportTemp='lewd' then
-			update `freeReply` set `19_report`=`19_report`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+			update `freeReply` set `19_report`=`19_report`-1 where `author`=replyerTemp and `regdate`=regdateTemp;
 		elseif reportTemp='incoporate' then
-			update `freeReply` set `incoporate_report`=`incoporate_report`-1 where `replyer`=replyerTemp and `regdate`=regdateTemp;
+			update `freeReply` set `incoporate_report`=`incoporate_report`-1 where `author`=replyerTemp and `regdate`=regdateTemp;
 		end if;
 	END $$
 DELIMITER ;
@@ -582,11 +590,11 @@ DELIMITER $$
         SET reportTemp= NEW.report;
 
         if reportTemp='abuse' then
-			update `freeReComment` set `abuse_report`= `abuse_report`+1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+			update `freeReComment` set `abuse_report`= `abuse_report`+1 where `author`=reCommenterTemp and `regdate`=regdateTemp;
 		elseif reportTemp='lewd' then
-			update `freeReComment` set `19_report`=`19_report`+1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+			update `freeReComment` set `19_report`=`19_report`+1 where `author`=reCommenterTemp and `regdate`=regdateTemp;
 		elseif reportTemp='incoporate' then
-			update `freeReComment` set `incoporate_report`=`incoporate_report`+1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+			update `freeReComment` set `incoporate_report`=`incoporate_report`+1 where `author`=reCommenterTemp and `regdate`=regdateTemp;
 		end if;
 	END $$
 DELIMITER ;
@@ -605,11 +613,11 @@ DELIMITER $$
         SET reportTemp= OLD.report;
 
         if reportTemp='abuse' then
-			update `freeReComment` set `abuse_report`= `abuse_report`-1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+			update `freeReComment` set `abuse_report`= `abuse_report`-1 where `author`=reCommenterTemp and `regdate`=regdateTemp;
 		elseif reportTemp='lewd' then
-			update `freeReComment` set `19_report`=`19_report`-1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+			update `freeReComment` set `19_report`=`19_report`-1 where `author`=reCommenterTemp and `regdate`=regdateTemp;
 		elseif reportTemp='incoporate' then
-			update `freeReComment` set `incoporate_report`=`incoporate_report`-1 where `reCommenter`=reCommenterTemp and `regdate`=regdateTemp;
+			update `freeReComment` set `incoporate_report`=`incoporate_report`-1 where `author`=reCommenterTemp and `regdate`=regdateTemp;
 		end if;
 	END $$
 DELIMITER ;

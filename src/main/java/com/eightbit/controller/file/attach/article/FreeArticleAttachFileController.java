@@ -43,7 +43,7 @@ public class FreeArticleAttachFileController {
 
     private final TokenManager tokenManager;
 
-    @GetMapping(value="/attaches/{uploader}/{regdate}") //Files/attach/article/free/attatches
+    @GetMapping(value="/attaches/{uploader}/{regdate}") //Files/attach/article/free/attaches
     public ResponseEntity<List<UploadFile>> getFreeArticleAttachFileList(@PathVariable String uploader, @PathVariable String regdate, UploadFile uploadFile){
         uploadFile.setUploader(uploader);
         uploadFile.setRegdate(regdate);
@@ -71,7 +71,7 @@ public class FreeArticleAttachFileController {
                 .body(resource);
     }
 
-    @PostMapping(value = "/files") //Files/attach/article/free/files
+    @PostMapping(value = "/files")
     @Transactional
     public void insertFreeArticleShareFiles(MultipartHttpServletRequest request, @RequestParam(value ="writer") String writer,
                                         @RequestParam(value="regdate") String regdate,

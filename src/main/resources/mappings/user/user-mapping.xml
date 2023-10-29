@@ -54,7 +54,7 @@
     </update>
 
     <delete id="deleteUser">
-        delete from user where email=#{email}
+        delete from user where nickname=#{nickname}
     </delete>
 
 </mapper>

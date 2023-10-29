@@ -19,7 +19,7 @@ public class NoticeArticleRepository {
     private final FolderAndFileManger folderAndFileManger;
 
     public List<Article> getList(){
-        return mybatis.selectList("NoticeArticleMyBatisDAO.getFreeArticleList");
+        return mybatis.selectList("NoticeArticleMyBatisDAO.getArticleList");
     }
 
     public List<Article> getUserArticles(String writer){
@@ -47,7 +47,6 @@ public class NoticeArticleRepository {
     }
 
     public Article registerArticle(Article article){
-        mybatis.update("UserMyBatisDAO.updatePointByArticle", article);
         mybatis.insert("NoticeArticleMyBatisDAO.insertArticle", article);
         return  mybatis.selectOne("NoticeArticleMyBatisDAO.findWriterAndRegdate",mybatis.selectOne("NoticeArticleMyBatisDAO.selectSeqOfWriter", article));
     }
@@ -58,8 +57,8 @@ public class NoticeArticleRepository {
 
     public boolean removeArticle(Article article){
         mybatis.delete("NoticeArticleMyBatisDAO.deleteArticle", article);
-        folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(),"article","free", "sharefiles");
-        folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(), "article", "free", "viewfiles");
+        folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(),"article","notice", "sharefiles");
+        folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(), "article", "notice", "viewfiles");
         return true;
     }
 }

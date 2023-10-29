@@ -114,6 +114,7 @@ public class FolderAndFileManger {
         return new UploadFile(reCommenter, regdate, storeFilename, originFilename);
     }
 
+
     public void removeBoardFile(UploadFile uploadFile, String boardType, String contentType, String fileType){
 
         String regdate = uploadFile.getRegdate().replace(":", "");
@@ -186,6 +187,22 @@ public class FolderAndFileManger {
         }
     }
 
+    public void removeUserFilesAndFolder(String nickname){
+        String filepath=dir+nickname;
+
+        File folder = new File(filepath);
+
+        if (folder.exists()) {
+            File[] folder_list = folder.listFiles();
+
+            for (int j = 0; j < folder_list.length; j++) {
+                folder_list[j].delete(); //파일 삭제
+            }
+
+            folder.delete();
+        }
+    }
+
 
     public void removeBoardFilesAndFolder(String writer, String regdate, String boardType, String contentType, String fileType){
         regdate=regdate.replace(":","");
@@ -223,10 +240,10 @@ public class FolderAndFileManger {
         }
     }
 
-    public void removeReCommentFilesAndFolder(String writer, String regdate, String boardType, String contentType, String fileType){
+    public void removeReCommentFilesAndFolder(String reCommenter, String regdate, String original_commenter, String original_comment_regdate, String original_writer, String original_write_regdate, String boardType, String contentType, String fileType){
         regdate=regdate.replace(":","");
-        String filepath1=dir+writer+"/"+boardType+"/"+contentType+"/"+regdate+"/"+fileType;
-        String filepath2=dir+writer+"/"+boardType+"/"+contentType+"/"+regdate;
+        String filepath1=dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+reCommenter+"/"+regdate+"/"+fileType;
+        String filepath2=dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+reCommenter+"/"+regdate+"/"+fileType;
         File folder1=new File(filepath1);
         File folder2=new File(filepath2);
         if(folder1.exists()){

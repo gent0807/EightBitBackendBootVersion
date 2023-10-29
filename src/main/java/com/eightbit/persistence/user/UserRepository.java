@@ -5,6 +5,7 @@ import com.eightbit.entity.email.Temp;
 import com.eightbit.entity.user.LoginResult;
 import com.eightbit.entity.user.TokenInfo;
 import com.eightbit.entity.user.User;
+import com.eightbit.util.file.FolderAndFileManger;
 import com.eightbit.util.user.ProfileManager;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -29,6 +30,8 @@ public class UserRepository {
     private final BCryptPasswordEncoder encoder;
 
     private final ProfileManager profileManager;
+
+    private final FolderAndFileManger folderAndFileManger;
 
     private Long expiredMs= 1000*60*60l;
 
@@ -162,12 +165,10 @@ public class UserRepository {
     }
 
 
-    public void deleteUser(String email){
-        mybatis.delete("UserMyBatisDAO.deleteUser", email);
+    public void deleteUser(String nickname){
+        mybatis.delete("UserMyBatisDAO.deleteUser", nickname);
+        folderAndFileManger.removeUserFilesAndFolder(nickname);
     }
-
-
-
 
 
 

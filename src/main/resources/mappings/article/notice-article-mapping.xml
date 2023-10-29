@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NoticeArticleMyBatisDAO">
+
+    <select id="getArticleList" resultType="article">
+        select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from
+            noticeArticle article left join user member
+                                    on article.writer=member.nickname
+                                                order by seq desc) b ) a
+    </select>
+
+    <select id="getUserArticles" resultType="article">
+        select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from noticeArticle order by seq desc) b ) a where writer=#{writer}
+    </select>
+
+    <select id="getArticle" resultType="article">
+        select * from noticleArticle where writer=#{writer} and regdate=#{regdate}
+    </select>
+
+    <select id="getViewFile" resultType="uploadFile">
+        select * from noticeArticleFileView where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+    </select>
+
+
+    <select id="selectSeqOfWriter" resultType="article">
+        select max(a.seq) as seq from (select seq from noticeArticle where writer=#{writer}) as a;
+    </select>
+
+
+    <select id="findWriterAndRegdate" resultType="article">
+        select writer, regdate from noticleArticle where seq=#{seq}
+    </select>
+
+    <select id="selectLikeOfArticle" resultType="article">
+        select likecount from noticeArticle where writer=#{writer} and regdate=#{regdate}
+    </select>
+
+    <insert id="insertArticle">
+        insert into noticeArticle(title, writer, content) values(#{title}, #{writer}, #{content})
+    </insert>
+
+    <insert id="insertArticleViewFile">
+        insert into noticeArticleViewFile(uploader, regdate, storeFilename, uploadFilename) values(#{uploader}, #{regdate}, #{storeFilename},#{uploadFilename})
+    </insert>
+
+    <update id="updateArticle">
+        update noticeArticle set title=#{title}, content=#{content}, updatedate=now() where writer=#{writer} and regdate=#{regdate}
+    </update>
+
+    <update id="updateReComment">
+        update noticeReComment set content=#{content}, updatedate=now() where reCommenter=#{reCommenter} and regdate=#{regdate}
+    </update>
+
+    <update id="updateArticleVisitCnt">
+        update noticleArticle set visitcnt=visitcnt+1 where writer=#{writer} and regdate=#{regdate}
+    </update>
+
+    <delete id="deleteArticle">
+        delete from noticeArticle where writer=#{writer} and regdate=#{regdate}
+    </delete>
+
+
+    <delete id="deleteReComment">
+        delete from noticeReComment where reCommenter=#{reCommenter} and regdate=#{regdate}
+    </delete>
+
+</mapper>

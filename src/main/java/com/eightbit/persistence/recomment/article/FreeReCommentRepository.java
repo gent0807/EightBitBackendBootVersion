@@ -3,6 +3,7 @@ package com.eightbit.persistence.recomment.article;
 import com.eightbit.entity.article.Article;
 import com.eightbit.entity.comment.Comment;
 import com.eightbit.entity.file.UploadFile;
+import com.eightbit.persistence.comment.article.FreeCommentRepository;
 import com.eightbit.util.file.FolderAndFileManger;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -15,6 +16,8 @@ import java.util.List;
 public class FreeReCommentRepository {
 
     private final SqlSessionTemplate mybatis;
+
+    private final FreeCommentRepository freeCommentRepository;
 
     private FolderAndFileManger folderAndFileManger;
     public List<Comment> getReComments(Comment reComment){
@@ -43,9 +46,9 @@ public class FreeReCommentRepository {
 
 
     public void removeReComment(Comment reComment) {
-
+        Comment comment=freeCommentRepository.getOriginWriterAndRegdate(new UploadFile(reComment.getOriginal_author(), reComment.getOriginal_regdate()));
         mybatis.delete("FreeReCommentMyBatisDAO.deleteReComment", reComment);
-        folderAndFileManger.removeCommentFilesAndFolder(comment.getAuthor(), comment.getRegdate(), comment.getOriginal_author(), comment.getOriginal_regdate(), "article","free", "viewfiles");
+        folderAndFileManger.removeReCommentFilesAndFolder(reComment.getAuthor(), reComment.getRegdate(), reComment.getOriginal_author(), reComment.getOriginal_regdate(), comment.getOriginal_author(), comment.getOriginal_regdate(), "article","free", "viewfiles");
     }
 
 }

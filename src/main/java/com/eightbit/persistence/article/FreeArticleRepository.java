@@ -19,16 +19,17 @@ public class FreeArticleRepository {
 
     private final FolderAndFileManger folderAndFileManger;
     public List<Article> getList(){
-        return mybatis.selectList("BoardMyBatisDAO.getFreeArticleList");
+        return mybatis.selectList("FreeArticleMyBatisDAO.getArticleList");
     }
 
     public List<Article> getUserArticles(String writer){
-        return mybatis.selectList("BoardMyBatisDAO.getUserArticles", writer);
+        return mybatis.selectList("FreeArticleMyBatisDAO.getUserArticles", writer);
     }
 
 
     public Article getArticle(ArticleView articleView){
-        if(articleView.getViewer()!=null){
+
+        if(!articleView.getViewer().isEmpty()){
 
             Integer userArticleViewCount=mybatis.selectOne("ArticleViewMyBatisDAO.getArticleView", articleView);
 
@@ -41,23 +42,27 @@ public class FreeArticleRepository {
             }
         }
 
-        mybatis.update("BoardMyBatisDAO.updateArticleVisitCnt", articleView);
+        mybatis.update("FreeArticleMyBatisDAO.updateArticleVisitCnt", articleView);
 
-        return mybatis.selectOne("BoardMyBatisDAO.getArticle", articleView);
+        return mybatis.selectOne("FreeArticleMyBatisDAO.getArticle", articleView);
+    }
+
+    public Integer getTotalCommentCount(Article article){
+        return mybatis.selectOne("FreeArticleMyBatisDAO.getTotalCommentCount", article);
     }
 
     public Article registerArticle(Article article){
         mybatis.update("UserMyBatisDAO.updatePointByArticle", article);
-        mybatis.insert("BoardMyBatisDAO.insertArticle", article);
-        return  mybatis.selectOne("BoardMyBatisDAO.findWriterAndRegdate",mybatis.selectOne("BoardMyBatisDAO.selectSeqOfWriter", article));
+        mybatis.insert("FreeArticleMyBatisDAO.insertArticle", article);
+        return  mybatis.selectOne("FreeArticleMyBatisDAO.findWriterAndRegdate",mybatis.selectOne("FreeArticleMyBatisDAO.selectSeqOfWriter", article));
     }
 
     public void modifyArticle(Article article) {
-        mybatis.update("BoardMyBatisDAO.updateArticle", article);
+        mybatis.update("FreeArticleMyBatisDAO.updateArticle", article);
     }
 
     public boolean removeArticle(Article article){
-        mybatis.delete("BoardMyBatisDAO.deleteArticle", article);
+        mybatis.delete("FreeArticleMyBatisDAO.deleteArticle", article);
         folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(),"article","free", "sharefiles");
         folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(), "article", "free", "viewfiles");
         return true;

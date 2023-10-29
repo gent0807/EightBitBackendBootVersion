@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="BoardMyBatisDAO">
+<mapper namespace="FreeArticleMyBatisDAO">
 
-    <select id="getFreeArticleList" resultType="article">
+    <select id="getArticleList" resultType="article">
         select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from
             board article left join user member
                                           on article.writer=member.nickname
@@ -19,15 +19,15 @@
         select * from board where writer=#{writer} and regdate=#{regdate}
     </select>
 
-    <select id="getViewFile" resultType="uploadFile">
-        select * from freeArticleFileView where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+
+    <select id="getTotalCommentCount" resultType="_int">
+        select totalcomment from board where writer=#{writer} and regdate=#{regdate}
     </select>
 
 
     <select id="selectSeqOfWriter" resultType="article">
         select max(a.seq) as seq from (select seq from board where writer=#{writer}) as a;
     </select>
-
 
     <select id="findWriterAndRegdate" resultType="article">
         select writer, regdate from board where seq=#{seq}
@@ -41,16 +41,8 @@
         insert into board(title, writer, content) values(#{title}, #{writer}, #{content})
     </insert>
 
-    <insert id="insertArticleViewFile">
-        insert into freeArticleViewFile(uploader, regdate, storeFilename, uploadFilename) values(#{uploader}, #{regdate}, #{storeFilename},#{uploadFilename})
-    </insert>
-
     <update id="updateArticle">
         update board set title=#{title}, content=#{content}, updatedate=now() where writer=#{writer} and regdate=#{regdate}
-    </update>
-
-    <update id="updateReComment">
-        update freeReComment set content=#{content}, updatedate=now() where reCommenter=#{reCommenter} and regdate=#{regdate}
     </update>
 
     <update id="updateArticleVisitCnt">
@@ -60,12 +52,5 @@
     <delete id="deleteArticle">
         delete from board where writer=#{writer} and regdate=#{regdate}
     </delete>
-
-
-    <delete id="deleteReComment">
-        delete from freeReComment where reCommenter=#{reCommenter} and regdate=#{regdate}
-    </delete>
-
-
 
 </mapper>
