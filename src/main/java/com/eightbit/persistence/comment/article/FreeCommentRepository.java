@@ -17,7 +17,7 @@ public class FreeCommentRepository {
 
     private final SqlSessionTemplate mybatis;
 
-    private final FolderAndFileManger folderAndFileManger;
+
     public List<Comment> getReplies(Comment comment){
         return mybatis.selectList("FreeCommentMyBatisDAO.getArticleReplies", comment);
     }
@@ -42,6 +42,5 @@ public class FreeCommentRepository {
 
     public void removeReply(Comment comment){
         mybatis.delete("FreeCommentMyBatisDAO.deleteReply", comment);
-        folderAndFileManger.removeCommentFilesAndFolder(comment.getAuthor(), comment.getRegdate(), comment.getOriginal_author(), comment.getOriginal_regdate(), "article","free", "viewfiles");
     }
 }

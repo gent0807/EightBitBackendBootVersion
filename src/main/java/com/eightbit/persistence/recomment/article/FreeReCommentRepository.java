@@ -46,9 +46,7 @@ public class FreeReCommentRepository {
 
 
     public void removeReComment(Comment reComment) {
-        Comment comment=freeCommentRepository.getOriginWriterAndRegdate(new UploadFile(reComment.getOriginal_author(), reComment.getOriginal_regdate()));
         mybatis.delete("FreeReCommentMyBatisDAO.deleteReComment", reComment);
-        folderAndFileManger.removeReCommentFilesAndFolder(reComment.getAuthor(), reComment.getRegdate(), reComment.getOriginal_author(), reComment.getOriginal_regdate(), comment.getOriginal_author(), comment.getOriginal_regdate(), "article","free", "viewfiles");
     }
 
 }

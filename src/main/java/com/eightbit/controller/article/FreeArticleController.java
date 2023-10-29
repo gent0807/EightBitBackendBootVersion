@@ -5,6 +5,7 @@ import com.eightbit.entity.view.ArticleView;
 import com.eightbit.inter.article.ArticleService;
 import com.eightbit.persistence.article.FreeArticleRepository;
 import com.eightbit.impl.token.TokenManager;
+import com.eightbit.util.file.FolderAndFileManger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -30,6 +31,8 @@ public class FreeArticleController {
     private final FreeArticleRepository freeArticleRepository;
 
     private final TokenManager tokenManager;
+
+    private final FolderAndFileManger folderAndFileManger;
 
     @GetMapping(value = "/articles")
     public ResponseEntity<List<Article>> getList(){
@@ -88,6 +91,8 @@ public class FreeArticleController {
             article.setWriter(writer);
             article.setRegdate(regdate);
             freeArticleRepository.removeArticle(article);
+            folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(),"article","free", "sharefiles");
+            folderAndFileManger.removeBoardFilesAndFolder(article.getWriter(), article.getRegdate(), "article", "free", "viewfiles");
         }
     }
 

@@ -3,6 +3,7 @@ package com.eightbit.controller.comment.article;
 import com.eightbit.entity.comment.Comment;
 import com.eightbit.persistence.comment.article.FreeCommentRepository;
 import com.eightbit.impl.token.TokenManager;
+import com.eightbit.util.file.FolderAndFileManger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,8 @@ public class FreeCommentController {
     private final FreeCommentRepository freeCommentRepository;
 
     private final TokenManager tokenManager;
+
+    private final FolderAndFileManger folderAndFileManger;
 
     @GetMapping(value="/comments")
     public ResponseEntity<List<Comment>> getReplies(@RequestParam String original_writer, @RequestParam String original_regdate, Comment comment) {
@@ -66,6 +69,7 @@ public class FreeCommentController {
             comment.setAuthor(replyer);
             comment.setRegdate(regdate);
             freeCommentRepository.removeReply(comment);
+            folderAndFileManger.removeCommentFilesAndFolder(comment.getAuthor(), comment.getRegdate(), comment.getOriginal_author(), comment.getOriginal_regdate(), "article","free", "viewfiles");
             return ResponseEntity.ok().body("");
         }
 

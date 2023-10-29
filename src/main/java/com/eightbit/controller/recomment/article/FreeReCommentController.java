@@ -3,8 +3,11 @@ package com.eightbit.controller.recomment.article;
 import com.eightbit.entity.article.Article;
 import com.eightbit.entity.comment.Comment;
 
+import com.eightbit.entity.file.UploadFile;
+import com.eightbit.persistence.comment.article.FreeCommentRepository;
 import com.eightbit.persistence.recomment.article.FreeReCommentRepository;
 import com.eightbit.impl.token.TokenManager;
+import com.eightbit.util.file.FolderAndFileManger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,9 +25,13 @@ import java.util.List;
 @Slf4j
 public class FreeReCommentController {
 
+    private final FreeCommentRepository freeCommentRepository;
+
     private final FreeReCommentRepository freeReCommentRepository;
 
     private final TokenManager tokenManager;
+
+    private final FolderAndFileManger folderAndFileManger;
 
     @GetMapping(value="/reComments") //ReComments/free/reComments
     public ResponseEntity<List<Comment>> getReComments(@RequestParam String original_replyer, @RequestParam String original_regdate, Comment reComment){
@@ -71,6 +78,8 @@ public class FreeReCommentController {
             reComment.setAuthor(reCommenter);
             reComment.setRegdate(regdate);
             freeReCommentRepository.removeReComment(reComment);
+            Comment comment=freeCommentRepository.getOriginWriterAndRegdate(new UploadFile(reComment.getOriginal_author(), reComment.getOriginal_regdate()));
+            folderAndFileManger.removeReCommentFilesAndFolder(reComment.getAuthor(), reComment.getRegdate(), reComment.getOriginal_author(), reComment.getOriginal_regdate(), comment.getOriginal_author(), comment.getOriginal_regdate(), "article","free", "viewfiles");
             return ResponseEntity.ok().body("");
         }
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StrategyArticleAttachFileMyBatisDAO">
+
+    <select id="getAttachFileList" resultType="uploadFile">
+        select * from strategyArticleFileShare where uploader=#{uploader} and regdate=#{regdate}
+    </select>
+
+    <select id="getAttachFile" resultType="uploadFile">
+        select * from strategyArticleFileShare where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+    </select>
+
+    <insert id="insertArticleShareFile">
+        insert into strategyArticleFileShare(uploader, regdate, storeFilename, uploadFilename) values(#{uploader}, #{regdate}, #{storeFilename}, #{uploadFilename})
+    </insert>
+
+    <delete id="deleteArticleShareFile">
+        delete from strategyArticleFileShare where id=#{id} and uploader=#{uploader} and regdate=#{regdate}
+    </delete>
+
+</mapper>
