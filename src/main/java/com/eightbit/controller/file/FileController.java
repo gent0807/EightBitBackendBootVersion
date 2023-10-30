@@ -2,10 +2,11 @@ package com.eightbit.controller.file;
 
 import com.eightbit.entity.comment.Comment;
 import com.eightbit.entity.file.UploadFile;
+import com.eightbit.impl.file.FileServiceImpl;
 import com.eightbit.impl.token.TokenManager;
 import com.eightbit.persistence.comment.CommentRepository;
 import com.eightbit.persistence.file.FileRepository;
-import com.eightbit.impl.file.FileInstaller;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +38,7 @@ import java.util.List;
 @Primary
 @PropertySource("classpath:upload.properties")
 public class FileController {
-    private FileInstaller fileInstaller;
+    private final FileServiceImpl fileService;
 
     private final FileRepository fileRepository;
 
@@ -127,7 +128,7 @@ public class FileController {
 
 
         if(tokenManager.checkAccessToken(request, token, uploader)) {
-            List<UploadFile> uploadFiles= fileInstaller.registerFiles(uploader, regdate, files, contentType, storeType, depth);
+            List<UploadFile> uploadFiles= fileService.registerFiles(uploader, regdate, files, contentType, storeType, depth);
             for(UploadFile uploadFile : uploadFiles){
                 fileRepository.registerFile(uploadFile);
             }
@@ -140,8 +141,8 @@ public class FileController {
         if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
 
             for(UploadFile deleteFile : deleteFileList){
-                if (fileRepository.removeFile(deleteFile)) {
-                    fileInstaller.removeFile(deleteFile);
+                if (fileService.removeFile(deleteFile)) {
+                    fileRepository.removeFile(deleteFile);
                 }
             }
         }

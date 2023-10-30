@@ -26,6 +26,7 @@ public class CommentController {
 
     private final FolderAndFileManger folderAndFileManger;
 
+
     @GetMapping(value="/comments")
     public ResponseEntity<List<Comment>> getComments(@RequestParam String original_author, @RequestParam String original_regdate,
                                                      @RequestParam String contentType, @RequestParam int depth, Comment comment) {
@@ -80,8 +81,8 @@ public class CommentController {
             comment.setRegdate(regdate);
             comment.setContentType(contentType);
             comment.setDepth(depth);
-            commentRepository.removeComment(comment);
             folderAndFileManger.removeFilesAndFolder(comment.getAuthor(), comment.getRegdate(), contentType, depth);
+            commentRepository.removeComment(comment);
             return ResponseEntity.ok().body("");
         }
 

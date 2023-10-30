@@ -35,8 +35,12 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Phone/*","/Email/*","/Board/**", "/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/Users/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/Articles/aritcle/notice/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/Games").hasRole("DEVELOPER")
+                .antMatchers(HttpMethod.POST, "/Shops").hasRole("PRODUCER")
                 .antMatchers(HttpMethod.PUT, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/Articles/aritcle/notice/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files").authenticated().and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();

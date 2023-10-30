@@ -15,14 +15,25 @@ public class UploadFile {
     private String regdate;
     private String storeFilename;
     private String uploadFilename;
-    private int depth;
     private String contentType;
     private String storeType;
+    private int depth;
+
 
     public UploadFile(String uploader, String regdate, String contentType, int depth){
         this.uploader=uploader;
         this.regdate=regdate;
         this.contentType=contentType;
+        this.depth=depth;
+    }
+
+    public UploadFile(String uploader, String regdate, String storeFilename, String uploadFilename,String contentType, String storeType, int depth){
+        this.uploader=uploader;
+        this.regdate=regdate;
+        this.storeFilename=storeFilename;
+        this.uploadFilename=uploadFilename;
+        this.contentType=contentType;
+        this.storeType=storeType;
         this.depth=depth;
     }
 

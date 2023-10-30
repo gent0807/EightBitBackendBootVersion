@@ -55,22 +55,24 @@ public class ArticleController {
     }
 
 
-    @PostMapping(value = "/article")
+    @PostMapping(value = "/article/{contentType}")
     @Transactional
-    public ResponseEntity<Article> insertArticle(HttpServletRequest request, String token, @RequestBody Article article){
+    public ResponseEntity<Article> insertArticle(HttpServletRequest request, String token, @PathVariable String contentType, @RequestBody Article article){
 
         if(tokenManager.checkAccessToken(request, token, article.getWriter())){
+            article.setContentType(contentType);
             return ResponseEntity.ok().body(articleRepository.registerArticle(article));
         }
         return ResponseEntity.status(HttpStatus.resolve(403)).body(null);
     }
 
-    @PatchMapping(value="/article")
+    @PatchMapping(value="/article/{contentType}/{writer}/{regdate}")
     @Transactional
-    public void updateArticle(HttpServletRequest request, String token, @RequestParam("writer") String writer, @RequestParam("regdate") String regdate, @RequestBody Article article){
+    public void updateArticle(HttpServletRequest request, String token, @PathVariable String contentType,@PathVariable String writer, @PathVariable String regdate, @RequestBody Article article){
         if(tokenManager.checkAccessToken(request,token,writer)){
             article.setWriter(writer);
             article.setRegdate(regdate);
+            article.setContentType(contentType);
             articleRepository.modifyArticle(article);
         }
     }

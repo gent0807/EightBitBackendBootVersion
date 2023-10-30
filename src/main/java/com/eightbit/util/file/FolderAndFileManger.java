@@ -19,23 +19,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @PropertySource("classpath:upload.properties")
 public class FolderAndFileManger {
-    CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 
 
     @Value("${file.dir}")
     private String dir;
 
 
-    public String setFilePath(String uploader, String regdate, String contentType, String storeType, int depth) {
+    public String setFilePath(String uploader, String regdate, String originRegdate, String contentType, String storeType, int depth) {
         if(depth==1){
             return dir+uploader+"/"+contentType+"/"+regdate+"/"+storeType;
         }
         else if(depth==2){
-            Comment comment=commentRepository.getOriginAuthorAndRegdateFromUploadFile(new UploadFile(uploader, regdate, contentType,depth));
+            Comment comment=commentRepository.getOriginAuthorAndRegdateFromUploadFile(new UploadFile(uploader, originRegdate, contentType, depth));
             return dir+comment.getOriginal_author()+"/"+contentType+"/"+comment.getOriginal_regdate()+"/comment/"+uploader+"/"+regdate+"/"+storeType;
         }
         if(depth==3){
-            Comment comment=commentRepository.getOriginAuthorAndRegdateFromUploadFile(new UploadFile(uploader, regdate, contentType,depth));
+            Comment comment=commentRepository.getOriginAuthorAndRegdateFromUploadFile(new UploadFile(uploader, originRegdate, contentType,depth));
             String original_commenter=comment.getOriginal_author();
             String original_comment_regdate=comment.getOriginal_regdate();
             comment=commentRepository.getOriginAuthorAndRegdateFromComment(comment);
@@ -58,7 +58,7 @@ public class FolderAndFileManger {
 
     public UploadFile storeFile(MultipartFile mf, String uploader, String regdate, String contentType, String storeType, int depth) throws IOException {
         String storeRegdate=regdate.replace(":","");
-        String filepath=setFilePath(uploader, storeRegdate, contentType, storeType, depth);
+        String filepath=setFilePath(uploader, storeRegdate, regdate, contentType, storeType, depth);
         createDir(new File(filepath));
 
         System.out.println("mf :"+mf);
@@ -70,7 +70,7 @@ public class FolderAndFileManger {
 
         mf.transferTo(f);
 
-        return new UploadFile(uploader, regdate, storeFilename, originFilename);
+        return new UploadFile(uploader, regdate, storeFilename, originFilename, contentType, storeType, depth);
     }
 
     public String createStoreFilename(String originFilename) {
@@ -86,9 +86,9 @@ public class FolderAndFileManger {
         return originFilename.substring(pos+1);
     }
 
-    public void removeFile(UploadFile uploadFile){
+    public boolean removeFile(UploadFile uploadFile){
         String storeRegdate = uploadFile.getRegdate().replace(":", "");
-        String filePath=setFilePath(uploadFile.getUploader(), storeRegdate, uploadFile.getContentType(), uploadFile.getStoreType(), uploadFile.getDepth());
+        String filePath=setFilePath(uploadFile.getUploader(), storeRegdate, uploadFile.getRegdate(), uploadFile.getContentType(), uploadFile.getStoreType(), uploadFile.getDepth());
 
         File folder = new File(filePath);
 
@@ -102,9 +102,13 @@ public class FolderAndFileManger {
             File[] list = folder.listFiles();
 
             if (list.length == 0) {
-                folder.delete();
+                return folder.delete();
+
             }
+
+            return true;
         }
+        return true;
     }
 
 
@@ -152,8 +156,8 @@ public class FolderAndFileManger {
 
 
     public void removeFilesAndFolder(String uploader, String regdate, String contentType, int depth){
-        regdate=regdate.replace(":","");
-        String filePath=setFilePath(uploader, regdate, contentType, null, depth);
+        String storeRegdate=regdate.replace(":","");
+        String filePath=setFilePath(uploader, storeRegdate, regdate, contentType, null, depth);
         deleteFolder(filePath);
     }
 

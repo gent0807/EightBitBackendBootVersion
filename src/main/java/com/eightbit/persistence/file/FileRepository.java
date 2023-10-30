@@ -23,8 +23,7 @@ public class FileRepository {
         mybatis.insert("FileMyBatisDAO.insertFile", uploadFile);
     }
 
-    public boolean removeFile(UploadFile uploadFile){
+    public void removeFile(UploadFile uploadFile){
         mybatis.delete("FileMyBatisDAO.deleteFile", uploadFile);
-        return true;
     }
 }
