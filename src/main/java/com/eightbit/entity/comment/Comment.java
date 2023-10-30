@@ -20,6 +20,8 @@ public class Comment {
     private int likecount;
     private int recomment_count;
     private String updatedate;
+    private int depth;
+    private String contentType;
 
     public Comment(String author, String regdate){
         this.author=author;

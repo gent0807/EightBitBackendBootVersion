@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Like {
     private String liker;
-    private String author;
+    private String master;
     private String regdate;
+    private int depth;
+    private String contentType;
 }

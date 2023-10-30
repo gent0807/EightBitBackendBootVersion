@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ArticleMyBatisDAO">
+
+    <select id="getArticleList" resultType="article">
+        select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from
+            article boardTable left join user member
+                                    on boardTable.writer=member.nickname order by seq desc) b ) a where contentType=#{contentType}
+     </select>
+
+    <select id="getUserArticles" resultType="article">
+        select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from article order by seq desc) b ) a
+                   where writer=#{writer} and contentType=#{contentType}
+    </select>
+
+    <select id="getArticle" resultType="article">
+        select * from article where writer=#{master} and regdate=#{regdate} and contentType=#{contentType}
+    </select>
+
+    <select id="selectSeqOfWriter" resultType="article">
+        select max(a.seq) as seq from (select seq from article where writer=#{writer} and contentType=#{contentType}) as a;
+    </select>
+
+    <select id="findWriterAndRegdate" resultType="article">
+        select writer, regdate from article where seq=#{seq}
+    </select>
+
+    <select id="selectLikeOfArticle" resultType="article">
+        select likecount from article where writer=#{writer} and regdate=#{regdate} and contentType=#{contentType}
+    </select>
+
+    <insert id="insertArticle">
+        insert into article(title, writer, content, contentType, depth) values(#{title}, #{writer}, #{content}, #{contentType}, #{depth})
+    </insert>
+
+    <update id="updateArticle">
+        update article set title=#{title}, content=#{content}, updatedate=now() where writer=#{writer} and regdate=#{regdate} and contentType=#{contentType}
+    </update>
+
+    <update id="updateArticleVisitCnt">
+        update article set visitcnt=visitcnt+1 where writer=#{master} and regdate=#{regdate} and contentType=#{contentType}
+    </update>
+
+    <delete id="deleteArticle">
+        delete from core where register=#{writer} and regdate=#{regdate} and contentType=#{contentType} and depth=1
+    </delete>
+
+</mapper>

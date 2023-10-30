@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommentMyBatisDAO">
+    <select id="getComments" resultType="comment">
+        select a.* from (select row_number() over(order by b.seq) AS id, b.* from (select * from comment where original_author=#{original_author} and original_regdate=#{original_regdate} and
+                                                                                                        contentType=#{contentType} and depth=#{depth}
+                                                                                                           order by seq) b) a
+    </select>
+
+    <select id="getReCommentCount" resultType="_int">
+        select count(*) from comment A
+                                 join comment B on A.original_author=B.author and A.original_regdate=B.regdate
+                                 join article C on B.original_author=C.writer and B.original_regdate=C.regdate
+        where writer=#{original_author} and C.regdate=#{regdate}
+    </select>
+
+    <insert id="insertComment">
+        insert into comment(original_author, original_regdate, author, content, contentType, depth) values (#{original_author}, #{original_regdate}, #{author}, #{content}, #{contentType}, #{depth})
+    </insert>
+
+    <select id="getCommentRegdateAndUpdatedate" resultType="comment">
+        select regdate, updatedate from comment where seq=#{seq}
+    </select>
+
+    <select id="getSeqOfComment" resultType="_int">
+        select max(a.seq) as seq from (select seq from comment where author=#{author} and contentType=#{contentType} and depth=#{depth}) as a;
+    </select>
+
+    <select id="getOriginAuthorAndRegdateFromUploadFile" resultType="comment">
+        select * from comment where author=#{uploader} and regdate=#{regdate} and contentType=#{contentType} and depth=#{depth}
+    </select>
+
+    <select id="getOriginAuthorAndRegdateFromComment" resultType="comment">
+        select * from comment where author=#{original_author} and regdate=#{original_regdate} and contentType=#{contentType} and depth=2
+    </select>
+
+    <update id="updateComment">
+        update comment set content=#{content}, updatedate=now() where author=#{author} and regdate=#{regdate} and contentType=#{contentType} and depth=#{depth}
+    </update>
+
+    <delete id="deleteComment">
+        delete from core where register=#{author} and regdate=#{regdate} and contentType=#{contentType} and depth=#{depth}
+    </delete>
+
+</mapper>

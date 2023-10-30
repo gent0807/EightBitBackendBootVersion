@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LikeMyBatisDAO">
+
+    <select id="getLikers" resultType="string">
+        select liker from likeState where master=#{master} and regdate=#{regdate} and contentType=#{contentType} and depth=#{depth}
+    </select>
+
+
+    <insert id="insertLike">
+        insert into likeState(liker, master, regdate, contentType, depth) values( #{liker}, #{master}, #{regdate}, #{contentType}, #{depth})
+    </insert>
+
+
+    <delete id="deleteLike">
+        delete from likeState where liker=#{liker} and master=#{master} and regdate=#{regdate} and contentType=#{contentType} and depth=#{depth}
+    </delete>
+
+</mapper>

@@ -1,4 +1,4 @@
-package com.eightbit.entity.report;
+package com.eightbit.entity.tag;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Report {
-    private String reporter;
-    private String master;
+public class Tag {
+    private int id;
+    private String tagger;
     private String regdate;
-    private String report;
-    private int depth;
+    private String tag;
     private String contentType;
 }

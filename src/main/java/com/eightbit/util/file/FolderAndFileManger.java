@@ -4,6 +4,7 @@ package com.eightbit.util.file;
 import com.eightbit.entity.article.Article;
 import com.eightbit.entity.comment.Comment;
 import com.eightbit.entity.file.UploadFile;
+import com.eightbit.persistence.comment.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -18,31 +19,58 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @PropertySource("classpath:upload.properties")
 public class FolderAndFileManger {
+    CommentRepository commentRepository;
 
 
     @Value("${file.dir}")
     private String dir;
 
-    public String setBoardFilePath(String writer, String regdate, String dir, String boardType, String conetentType, String fileType) {
-        return dir+writer + "/"+boardType+"/"+conetentType+"/"+ regdate +"/"+fileType;
+
+    public String setFilePath(String uploader, String regdate, String contentType, String storeType, int depth) {
+        if(depth==1){
+            return dir+uploader+"/"+contentType+"/"+regdate+"/"+storeType;
+        }
+        else if(depth==2){
+            Comment comment=commentRepository.getOriginAuthorAndRegdateFromUploadFile(new UploadFile(uploader, regdate, contentType,depth));
+            return dir+comment.getOriginal_author()+"/"+contentType+"/"+comment.getOriginal_regdate()+"/comment/"+uploader+"/"+regdate+"/"+storeType;
+        }
+        if(depth==3){
+            Comment comment=commentRepository.getOriginAuthorAndRegdateFromUploadFile(new UploadFile(uploader, regdate, contentType,depth));
+            String original_commenter=comment.getOriginal_author();
+            String original_comment_regdate=comment.getOriginal_regdate();
+            comment=commentRepository.getOriginAuthorAndRegdateFromComment(comment);
+            return dir+comment.getOriginal_author()+
+                    "/"+contentType+"/"+comment.getOriginal_regdate()+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"
+                    +uploader+"/"+regdate+"/"+storeType;
+        }
+        return null;
     }
 
-    public String setCommentFilePath(String commenter, String regdate, String original_writer, String original_regdate, String dir, String boardType, String contentType, String fileType) {
 
-        return dir + original_writer + "/"+boardType+"/"+contentType+"/"+ original_regdate + "/comment/" + commenter + "/" + regdate + "/"+fileType;
-    }
-
-    public String setReCommentFilePath(String reCommenter, String regdate, String original_commenter, String original_comment_regdate, String original_writer, String original_write_regdate, String dir, String boardType, String contentType, String fileType) {
-
-
-        return dir + original_writer + "/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+reCommenter+"/"+regdate+"/"+fileType;
-    }
 
     public boolean createDir(File folder){
         if(!folder.exists()){
             return folder.mkdirs();
         }
         return false;
+    }
+
+
+    public UploadFile storeFile(MultipartFile mf, String uploader, String regdate, String contentType, String storeType, int depth) throws IOException {
+        String storeRegdate=regdate.replace(":","");
+        String filepath=setFilePath(uploader, storeRegdate, contentType, storeType, depth);
+        createDir(new File(filepath));
+
+        System.out.println("mf :"+mf);
+        String originFilename = mf.getOriginalFilename();
+        System.out.println("originFilename:"+originFilename);
+        String storeFilename = createStoreFilename(originFilename);
+        System.out.println("storeFilename:"+storeFilename);
+        File f = new File(filepath + "/"+storeFilename);
+
+        mf.transferTo(f);
+
+        return new UploadFile(uploader, regdate, storeFilename, originFilename);
     }
 
     public String createStoreFilename(String originFilename) {
@@ -58,72 +86,14 @@ public class FolderAndFileManger {
         return originFilename.substring(pos+1);
     }
 
+    public void removeFile(UploadFile uploadFile){
+        String storeRegdate = uploadFile.getRegdate().replace(":", "");
+        String filePath=setFilePath(uploadFile.getUploader(), storeRegdate, uploadFile.getContentType(), uploadFile.getStoreType(), uploadFile.getDepth());
 
-
-    public UploadFile storeBoardFile(MultipartFile mf, String writer, String regdate, String dir, String boardType, String contentType, String fileType) throws IOException {
-        String storeRegdate=regdate.replace(":","");
-        String filepath=setBoardFilePath(writer, storeRegdate, dir, boardType, contentType, fileType);
-        createDir(new File(filepath));
-
-        System.out.println("mf :"+mf);
-        String originFilename = mf.getOriginalFilename();
-        System.out.println("originFilename:"+originFilename);
-        String storeFilename = createStoreFilename(originFilename);
-        System.out.println("storeFilename:"+storeFilename);
-        File f = new File(filepath + "/"+storeFilename);
-
-        mf.transferTo(f);
-
-        return new UploadFile(writer, regdate, storeFilename, originFilename);
-    }
-
-    public UploadFile storeCommentFile(MultipartFile mf, String commenter, String regdate, String original_writer, String original_regdate, String dir, String boardType, String contentType, String fileType) throws IOException {
-        String storeRegdate=regdate.replace(":","");
-        original_regdate=original_regdate.replace(":","");
-        String filepath=setCommentFilePath(commenter, storeRegdate, original_writer, original_regdate, dir, boardType, contentType, fileType);
-        createDir(new File(filepath));
-
-        System.out.println("mf :"+mf);
-        String originFilename = mf.getOriginalFilename();
-        System.out.println("originFilename:"+originFilename);
-        String storeFilename = createStoreFilename(originFilename);
-        System.out.println("storeFilename:"+storeFilename);
-        File f = new File(filepath + "/"+storeFilename);
-
-        mf.transferTo(f);
-
-        return new UploadFile(commenter, regdate, storeFilename, originFilename);
-    }
-
-    public UploadFile storeReCommentFile(MultipartFile mf, String reCommenter, String regdate, String original_commenter, String original_comment_regdate, String original_writer, String original_write_regdate, String dir, String boardType, String contentType, String fileType) throws IOException {
-        String storeRegdate=regdate.replace(":","");
-        original_comment_regdate=original_comment_regdate.replace(":","");
-        original_write_regdate=original_write_regdate.replace(":","");
-        String filepath=setReCommentFilePath(reCommenter, storeRegdate, original_commenter, original_comment_regdate, original_writer, original_write_regdate, dir, boardType, contentType, fileType);
-        createDir(new File(filepath));
-
-        System.out.println("mf :"+mf);
-        String originFilename = mf.getOriginalFilename();
-        System.out.println("originFilename:"+originFilename);
-        String storeFilename = createStoreFilename(originFilename);
-        System.out.println("storeFilename:"+storeFilename);
-        File f = new File(filepath + "/"+storeFilename);
-
-        mf.transferTo(f);
-
-        return new UploadFile(reCommenter, regdate, storeFilename, originFilename);
-    }
-
-
-    public void removeBoardFile(UploadFile uploadFile, String boardType, String contentType, String fileType){
-
-        String regdate = uploadFile.getRegdate().replace(":", "");
-        String filepath = dir + uploadFile.getUploader() + "/"+boardType+"/"+contentType+"/"+regdate +"/"+fileType ;
-
-        File folder = new File(filepath);
+        File folder = new File(filePath);
 
         if (folder.exists()) {
-            File targetfile = new File(filepath + "/" + uploadFile.getStoreFilename());
+            File targetfile = new File(filePath + "/" + uploadFile.getStoreFilename());
 
             if (targetfile.isFile()) {
                 targetfile.delete();
@@ -132,60 +102,12 @@ public class FolderAndFileManger {
             File[] list = folder.listFiles();
 
             if (list.length == 0) {
-                File parentFoler = new File(dir + uploadFile.getUploader() + "/"+boardType+"/"+contentType+"/"+ regdate);
                 folder.delete();
-                parentFoler.delete();
             }
         }
     }
 
-    public void removeCommentFile(UploadFile uploadFile, String original_writer, String original_regdate, String boardType, String contentType, String fileType){
 
-        String regdate = uploadFile.getRegdate().replace(":", "");
-        String filepath = dir +original_writer+ "/"+boardType+"/"+contentType+"/"+original_regdate+"/comment/"+uploadFile.getUploader()+"/"+regdate+"/"+fileType ;
-
-        File folder = new File(filepath);
-
-        if (folder.exists()) {
-            File targetfile = new File(filepath + "/" + uploadFile.getStoreFilename());
-
-            if (targetfile.isFile()) {
-                targetfile.delete();
-            }
-
-            File[] list = folder.listFiles();
-
-            if (list.length == 0) {
-                File parentFoler = new File(dir +original_writer+ "/"+boardType+"/"+contentType+"/"+original_regdate+"/comment/"+uploadFile.getUploader()+"/"+regdate);
-                folder.delete();
-                parentFoler.delete();
-            }
-        }
-    }
-
-    public void removeReCommentFile(UploadFile uploadFile, String original_commenter, String original_comment_regdate, String original_writer, String original_write_regdate, String boardType, String contentType, String fileType){
-
-        String regdate = uploadFile.getRegdate().replace(":", "");
-        String filepath = dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+uploadFile.getUploader()+"/"+regdate+"/"+fileType;
-
-        File folder = new File(filepath);
-
-        if (folder.exists()) {
-            File targetfile = new File(filepath + "/" + uploadFile.getStoreFilename());
-
-            if (targetfile.isFile()) {
-                targetfile.delete();
-            }
-
-            File[] list = folder.listFiles();
-
-            if (list.length == 0) {
-                File parentFoler = new File(dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+uploadFile.getUploader()+"/"+regdate);
-                folder.delete();
-                parentFoler.delete();
-            }
-        }
-    }
 
     public void removeUserFilesAndFolder(String nickname){
         String filepath=dir+nickname;
@@ -203,60 +125,39 @@ public class FolderAndFileManger {
         }
     }
 
+    public static void deleteFolder(String path) {
 
-    public void removeBoardFilesAndFolder(String writer, String regdate, String boardType, String contentType, String fileType){
-        regdate=regdate.replace(":","");
-        String filepath1=dir+writer+"/"+boardType+"/"+contentType+"/"+regdate+"/"+fileType;
-        String filepath2=dir+writer+"/"+boardType+"/"+contentType+"/"+regdate;
-        File folder1=new File(filepath1);
-        File folder2=new File(filepath2);
-        if(folder1.exists()){
-            File[] folder_list = folder1.listFiles();
+        File folder = new File(path);
+        try {
+            if(folder.exists()){
+                File[] folder_list = folder.listFiles(); //파일리스트 얻어오기
 
-            for (int j = 0; j < folder_list.length; j++) {
-                folder_list[j].delete(); //파일 삭제
+                for (int i = 0; i < folder_list.length; i++) {
+                    if(folder_list[i].isFile()) {
+                        folder_list[i].delete();
+
+                    }else {
+                        deleteFolder(folder_list[i].getPath()); //재귀함수호출
+
+                    }
+                    folder_list[i].delete();
+                }
+                folder.delete(); //폴더 삭제
             }
-
-            folder1.delete();
-            folder2.delete();
+        } catch (Exception e) {
+            e.getStackTrace();
         }
+
     }
 
-    public void removeCommentFilesAndFolder(String commenter, String regdate, String original_writer, String original_regdate, String boardType, String contentType, String fileType){
+
+    public void removeFilesAndFolder(String uploader, String regdate, String contentType, int depth){
         regdate=regdate.replace(":","");
-        String filepath1=dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_regdate+"/comment/"+commenter+"/"+regdate+"/"+fileType;
-        String filepath2=dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_regdate+"/comment/"+commenter+"/"+regdate;
-        File folder1=new File(filepath1);
-        File folder2=new File(filepath2);
-        if(folder1.exists()){
-            File[] folder_list = folder1.listFiles();
-
-            for (int j = 0; j < folder_list.length; j++) {
-                folder_list[j].delete(); //파일 삭제
-            }
-
-            folder1.delete();
-            folder2.delete();
-        }
+        String filePath=setFilePath(uploader, regdate, contentType, null, depth);
+        deleteFolder(filePath);
     }
 
-    public void removeReCommentFilesAndFolder(String reCommenter, String regdate, String original_commenter, String original_comment_regdate, String original_writer, String original_write_regdate, String boardType, String contentType, String fileType){
-        regdate=regdate.replace(":","");
-        String filepath1=dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+reCommenter+"/"+regdate+"/"+fileType;
-        String filepath2=dir+original_writer+"/"+boardType+"/"+contentType+"/"+original_write_regdate+"/comment/"+original_commenter+"/"+original_comment_regdate+"/reComment/"+reCommenter+"/"+regdate+"/"+fileType;
-        File folder1=new File(filepath1);
-        File folder2=new File(filepath2);
-        if(folder1.exists()){
-            File[] folder_list = folder1.listFiles();
 
-            for (int j = 0; j < folder_list.length; j++) {
-                folder_list[j].delete(); //파일 삭제
-            }
-
-            folder1.delete();
-            folder2.delete();
-        }
-    }
 
 
 

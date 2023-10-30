@@ -1,4 +1,4 @@
-package com.eightbit.entity.report;
+package com.eightbit.entity.read;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Report {
-    private String reporter;
+public class Read {
+    private String reader;
     private String master;
     private String regdate;
-    private String report;
-    private int depth;
+    private String readDate;
     private String contentType;
 }

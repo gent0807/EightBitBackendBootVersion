@@ -1,21 +1,20 @@
-package com.eightbit.entity.article;
+package com.eightbit.entity.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Article {
+public class Game {
     private int id;
     private int seq;
     private String title;
     private String content;
-    private String writer;
+    private String developer;
     private String role;
     private String regdate;
     private String updatedate;

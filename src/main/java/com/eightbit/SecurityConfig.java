@@ -32,12 +32,12 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Phone/*","/Email/*","/Board/**", "/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**","/Files/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/Users/**","/Phone/*","/Email/*","/Board/**", "/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/Users/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**","/Files/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**","/Files/**").authenticated()
-                .antMatchers(HttpMethod.PATCH, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**","/Files/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/ReComments/**","/Files").authenticated().and()
+                .antMatchers(HttpMethod.POST, "/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/Users/**","/Articles/**","/Likes/**","/Reports/**","/Comments/**","/Files").authenticated().and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
      }

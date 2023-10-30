@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ReadMyBatisDAO">
+    <select id="getView" resultType="_int">
+        select count(*) from readed where reader=#{reader} and master=#{master} and regdate=#{regdate} and contentType=#{contentType}
+    </select>
+
+    <insert id="insertView">
+        insert into readed(reader, master, regdate, contentType) values(#{reader},#{master},#{regdate}, #{contentType})
+    </insert>
+
+    <update id="updateView">
+        update readed set readDate=now() where reader=#{reader} and master=#{master} and regdate=#{regdate} and contentType=#{contentType}
+    </update>
+
+
+</mapper>

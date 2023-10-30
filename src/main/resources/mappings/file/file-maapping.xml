@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FileMyBatisDAO">
+
+    <select id="getFileList" resultType="uploadFile">
+        select * from fileStore where uploader=#{uploader} and regdate=#{regdate} and contentType=#{contentType}
+                                  and storeType=#{storeType} and depth=#{depth}
+    </select>
+
+    <select id="getFile" resultType="uploadFile">
+        select * from fileStore where id=#{id} and uploader=#{uploader} and regdate=#{regdate} and
+                                      contentType=#{contentType} and storeType=#{storeType} and depth=#{depth}
+    </select>
+
+    <insert id="insertFile">
+        insert into fileStore(uploader, regdate, storeFilename, uploadFilename, contentType, storeType, depth) values(#{uploader}, #{regdate},
+                                                                                                                      #{storeFilename}, #{uploadFilename},
+                                                                                                                      #{contentType}, #{storeType}, #{depth})
+    </insert>
+
+    <delete id="deleteFile">
+        delete from fileStore where id=#{id} and uploader=#{uploader} and regdate=#{regdate} and contentType=#{contentType} and storeType=#{storeType} and depth=#{depth}
+    </delete>
+
+</mapper>
