@@ -24,6 +24,10 @@ public class GameRepository {
         return mybatis.selectList("GameMyBatisDAO.getDeveloperGames", game);
     }
 
+    public List<String> getOfficialGameList(){
+        return mybatis.selectList("GameMyBatisDAO.getOfficialGameList");
+    }
+
     public Game getGame(Read read) {
 
         if (!read.getReader().isEmpty()) {
@@ -47,7 +51,6 @@ public class GameRepository {
     }
 
     public Game registerGame(Game game){
-        mybatis.update("UserMyBatisDAO.updatePointByArticle", game);
         mybatis.insert("GameMyBatisDAO.insertGame", game);
         return  mybatis.selectOne("GameMyBatisDAO.findDeveloperAndRegdate",mybatis.selectOne("GameMyBatisDAO.selectSeqOfDeveloper", game));
     }

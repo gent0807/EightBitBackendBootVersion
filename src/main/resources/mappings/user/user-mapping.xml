@@ -20,6 +20,10 @@
         select role from user where nickname=#{nickname}
     </select>
 
+    <select id="getEmail" resultType="string">
+        select email from user where nickname=#{nickname}
+    </select>
+
     <select id="getUserProfileImagePath" resultType="string">
         select profileImgPath from user where nickname=#{nickname}
     </select>

@@ -80,6 +80,9 @@ public class UserRepository {
         return mybatis.selectOne("UserMyBatisDAO.getRole", nickname);
     }
 
+    public String getUserEmail(String nickname){
+        return mybatis.selectOne("UserMyBatisDAO.getEmail", nickname);
+    }
     public String getPassword(String nickname){
         return mybatis.selectOne("UserMyBatisDAO", nickname);
     }

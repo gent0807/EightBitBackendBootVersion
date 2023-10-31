@@ -64,6 +64,12 @@ public class UserController {
         return ResponseEntity.ok().body(userRepository.getUserRole(nickname));
     }
 
+    @GetMapping(value = "/email")
+    public ResponseEntity<String> getUserEmail(@RequestParam String nickname){
+        return ResponseEntity.ok().body(userRepository.getUserEmail(nickname));
+    }
+
+
     @PostMapping(value = "/user")
     public ResponseEntity<String> insertUser(@RequestBody User user) throws IOException {
         return ResponseEntity.ok().body(userService.insertUser(user));
