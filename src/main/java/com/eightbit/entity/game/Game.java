@@ -18,11 +18,15 @@ public class Game {
     private String role;
     private String regdate;
     private String updatedate;
+    private String genre;
     private String url;
     private int visitcnt;
     private int likecount;
     private int reply_count;
-    private int attach_count;
+    private int pcGameCount;
+    private int mobilGameCount;
+    private int imgCount;
+    private int bannerCount;
     private int depth;
     private String contentType;
 }

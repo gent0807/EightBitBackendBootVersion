@@ -28,11 +28,11 @@
     </select>
 
     <insert id="insertGame">
-        insert into game(title, developer, content, url, contentType, depth) values(#{title}, #{developer}, #{content}, #{url}, #{contentType}, #{depth})
+        insert into game(title, developer, content, genre, url, contentType, depth) values(#{title}, #{developer}, #{content}, #{genre}, #{url}, #{contentType}, #{depth})
     </insert>
 
     <update id="updateGame">
-        update game set title=#{title}, content=#{content}, url=#{url}, updatedate=now() where developer=#{Developer} and regdate=#{regdate} and contentType=#{contentType}
+        update game set title=#{title}, content=#{content}, genre=#{genre}, url=#{url}, updatedate=now() where developer=#{Developer} and regdate=#{regdate} and contentType=#{contentType}
     </update>
 
     <update id="updateGameVisitCnt">
