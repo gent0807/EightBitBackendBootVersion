@@ -5,8 +5,10 @@
 <configuration>
     <!-- Alias 설정 -->
     <typeAliases>
-        <typeAlias alias="article" type="com.eightbit.entity.article.Article" />
         <typeAlias alias="user"  type="com.eightbit.entity.user.User" />
+        <typeAlias alias="article" type="com.eightbit.entity.article.Article" />
+        <typeAlias alias="game" type="com.eightbit.entity.game.Game" />
+        <typeAlias alias="shop" type="com.eightbit.entity.shop.Shop" />
         <typeAlias alias="temp" type="com.eightbit.entity.email.Temp"/>
         <typeAlias alias="phone" type="com.eightbit.entity.phone.Phone"/>
         <typeAlias alias="comment" type="com.eightbit.entity.comment.Comment"/>

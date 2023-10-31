@@ -18,6 +18,7 @@ public class Game {
     private String role;
     private String regdate;
     private String updatedate;
+    private String url;
     private int visitcnt;
     private int likecount;
     private int reply_count;

@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @Primary
-@PropertySource("classpath:upload.properties")
 public class ArticleController {
     private final ArticleRepository articleRepository;
 
@@ -77,7 +76,7 @@ public class ArticleController {
         }
     }
 
-    @DeleteMapping(value = "/article/{writer}/{regdate}/{role}/{contentType}")
+    @DeleteMapping(value = "/article/{contentType}/{writer}/{regdate}/{role}")
     @Transactional
     public void deleteArticle(HttpServletRequest request, String token,
                               @PathVariable("writer") String writer, @PathVariable("regdate") String regdate,

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GameMyBatisDAO">
+
+    <select id="getGameList" resultType="game">
+        select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from
+            game boardTable left join user member
+                                         on boardTable.developer=member.nickname order by seq desc) b ) a where contentType=#{contentType}
+    </select>
+
+    <select id="getDeveloperGames" resultType="game">
+        select a.* from (select row_number() over(order by b.seq desc) AS id, b.* from (select * from game order by seq desc) b ) a
+        where developer=#{developer} and contentType=#{contentType}
+    </select>
+
+    <select id="getGame" resultType="game">
+        select * from game where developer=#{master} and regdate=#{regdate} and contentType=#{contentType}
+    </select>
+
+    <select id="selectSeqOfDeveloper" resultType="game">
+        select max(a.seq) as seq from (select seq from game where developer=#{developer} and contentType=#{contentType}) as a;
+    </select>
+
+    <select id="findDeveloperAndRegdate" resultType="game">
+        select developer, regdate from game where seq=#{seq}
+    </select>
+
+    <insert id="insertGame">
+        insert into game(title, developer, content, url, contentType, depth) values(#{title}, #{developer}, #{content}, #{url}, #{contentType}, #{depth})
+    </insert>
+
+    <update id="updateGame">
+        update game set title=#{title}, content=#{content}, url=#{url}, updatedate=now() where developer=#{Developer} and regdate=#{regdate} and contentType=#{contentType}
+    </update>
+
+    <update id="updateGameVisitCnt">
+        update game set visitcnt=visitcnt+1 where developer=#{master} and regdate=#{regdate} and contentType=#{contentType}
+    </update>
+
+    <delete id="deleteGame">
+        delete from core where register=#{developer} and regdate=#{regdate} and contentType=#{contentType} and depth=1
+    </delete>
+
+</mapper>

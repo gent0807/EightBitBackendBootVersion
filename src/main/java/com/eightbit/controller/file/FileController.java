@@ -116,15 +116,15 @@ public class FileController {
 
     }
 
-    @PostMapping(value = "/files")
+    @PostMapping(value = "/files/{contentType}/{depth}")
     @Transactional
     public void insertFiles(MultipartHttpServletRequest request, @RequestParam(value ="uploader") String uploader,
                                             @RequestParam(value="regdate") String regdate,
                                             @RequestParam(value="files") List<MultipartFile> files,
                                             String token,
-                                            @RequestParam(value = "contentType") String contentType,
+                                            @PathVariable(value = "contentType") String contentType,
                                             @RequestParam(value = "storeType") String storeType,
-                                            @RequestParam(value = "depth") int depth) throws IOException, ServletException {
+                                            @PathVariable(value = "depth") int depth) throws IOException, ServletException {
 
 
         if(tokenManager.checkAccessToken(request, token, uploader)) {
@@ -135,7 +135,7 @@ public class FileController {
         }
     }
 
-    @DeleteMapping(value="/files")
+    @DeleteMapping(value="/files/{contentType}/{depth}")
     @Transactional
     public void deleteFiles(HttpServletRequest request, String token, @RequestBody List<UploadFile> deleteFileList){
         if(tokenManager.checkAccessToken(request, token, deleteFileList.get(0).getUploader())){
