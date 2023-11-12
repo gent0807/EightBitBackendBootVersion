@@ -34,13 +34,10 @@ public class GameController {
 
     @GetMapping(value = "/games")
     public ResponseEntity<List<Game>> getGameList(@RequestParam String contentType){
+        System.out.println("fdsafdfadfadfadsf");
         return ResponseEntity.ok().body(gameRepository.getGameList(contentType));
     }
 
-    @GetMapping(value="/games/official")
-    public ResponseEntity<List<String>> getOfficialGames(){
-        return ResponseEntity.ok().body(gameRepository.getOfficialGameList());
-    }
 
     @GetMapping(value="/game")
     public ResponseEntity<Game> getGame(@RequestParam String viewer, @RequestParam String developer, @RequestParam String regdate,

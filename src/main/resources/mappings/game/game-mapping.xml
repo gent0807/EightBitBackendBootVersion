@@ -19,11 +19,6 @@
         select * from game where developer=#{master} and regdate=#{regdate} and contentType=#{contentType}
     </select>
 
-    <select id="getOfficialGameList" resultType="string">
-        select * from official
-    </select>
-
-
     <select id="selectSeqOfDeveloper" resultType="game">
         select max(a.seq) as seq from (select seq from game where developer=#{developer} and contentType=#{contentType}) as a;
     </select>
@@ -33,7 +28,7 @@
     </select>
 
     <insert id="insertGame">
-        insert into game(title, developer, content, genre, url, contentType, depth) values(#{title}, #{developer}, #{content}, #{genre}, #{url}, #{contentType}, #{depth})
+        insert into game(title, developer, content, genre, url, contentType, depth, contact) values(#{title}, #{developer}, #{content}, #{genre}, #{url}, #{contentType}, #{depth}, #{contact})
     </insert>
 
     <update id="updateGame">

@@ -24,10 +24,6 @@ public class GameRepository {
         return mybatis.selectList("GameMyBatisDAO.getDeveloperGames", game);
     }
 
-    public List<String> getOfficialGameList(){
-        return mybatis.selectList("GameMyBatisDAO.getOfficialGameList");
-    }
-
     public Game getGame(Read read) {
 
         if (!read.getReader().isEmpty()) {

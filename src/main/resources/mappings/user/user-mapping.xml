@@ -28,6 +28,10 @@
         select profileImgPath from user where nickname=#{nickname}
     </select>
 
+    <select id="getOfficialDevelopers" resultType="string">
+        select * from officialdeveloper
+    </select>
+
     <select id="getAccessToken" resultType="string">
         select accesstoken from user where nickname=#{writer}
     </select>

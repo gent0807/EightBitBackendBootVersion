@@ -24,9 +24,10 @@ public class Game {
     private int likecount;
     private int reply_count;
     private int pcGameCount;
-    private int mobilGameCount;
+    private int mobileGameCount;
     private int imgCount;
     private int bannerCount;
     private int depth;
     private String contentType;
+    private String contact;
 }

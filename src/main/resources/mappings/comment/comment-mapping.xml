@@ -41,7 +41,7 @@
     </update>
 
     <delete id="deleteComment">
-        delete from core where register=#{author} and regdate=#{regdate} and contentType=#{contentType} and depth=2
+        delete from core where register=#{author} and regdate=#{regdate} and contentType=#{contentType} and depth=#{depth}
     </delete>
 
 </mapper>

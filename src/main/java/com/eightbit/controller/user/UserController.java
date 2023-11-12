@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -67,6 +68,11 @@ public class UserController {
     @GetMapping(value = "/email")
     public ResponseEntity<String> getUserEmail(@RequestParam String nickname){
         return ResponseEntity.ok().body(userRepository.getUserEmail(nickname));
+    }
+
+    @GetMapping(value="/officialDevelopers")
+    public ResponseEntity<List<String>> getOfficialDevelopers(){
+        return ResponseEntity.ok().body(userRepository.getOfficialDevelopers());
     }
 
 

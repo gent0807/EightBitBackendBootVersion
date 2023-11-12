@@ -84,7 +84,11 @@ public class UserRepository {
         return mybatis.selectOne("UserMyBatisDAO.getEmail", nickname);
     }
     public String getPassword(String nickname){
-        return mybatis.selectOne("UserMyBatisDAO", nickname);
+        return mybatis.selectOne("UserMyBatisDAO.getPassword", nickname);
+    }
+
+    public List<String> getOfficialDevelopers(){
+        return mybatis.selectList("UserMyBatisDAO.getOfficialDevelopers");
     }
     public String getAccessToken(String writer){
         return mybatis.selectOne("UserMyBatisDAO.getAccessToken", writer);
